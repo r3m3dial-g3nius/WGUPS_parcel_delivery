@@ -9,6 +9,7 @@ from package import Package
 from truck import Truck
 
 distanceData = []
+addressData = []
 
 
 def input_package_data(file_name):
@@ -37,10 +38,23 @@ def input_distance_data(file_name):
     with open(file_name) as all_data_dist:
         distance_data = csv.reader(all_data_dist, delimiter=',')
         next(distance_data)  # skip header
-        for distances in distance_data:   # need to skip name and address
+        for distances in distance_data:  # need to skip name and address
             values = distances[2:]
             distanceData.append(values)
 # end distance data input static function
+
+
+# begin address data input static function
+def input_address_data(file_name):
+    with open(file_name) as all_address_data:
+        address_data = csv.reader(all_address_data, delimiter=',')
+        next(address_data)  # skip header
+        for address in address_data:  # need to skip name and address
+            values = address[:2]
+            addressData.append(values)
+
+
+# end address data input static function
 
 
 # HashTable class using chaining.
@@ -116,5 +130,10 @@ input_package_data('WGUPS_Package_File.csv')
 
 # Load distance data from CSV
 input_distance_data('WGUPS_Distance_Table.csv')
+# test distanceData list
+# print(distanceData)
 
-print(distanceData)
+input_address_data('WGUPS_Distance_Table.csv')
+# test addressData list
+# for address in addressData:
+#     print(address)

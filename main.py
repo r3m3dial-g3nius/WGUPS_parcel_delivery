@@ -3,6 +3,32 @@
 # C950 PA
 # parcel delivery project
 
+import csv
+import math
+from package import Package
+from truck import Truck
+
+
+def input_package_data(file_name):
+    with open(file_name) as all_packages:
+        package_data = csv.reader(all_packages, delimiter=',')
+        next(package_data)  # SKIP header or delete this line and header line in CSV later
+        for package in package_data:
+            package_id = int(package[0])
+            destination_address = package[1]
+            city = package[2]
+            state = package[3]
+            deliver_by = package[4]
+            mass = package[5]
+            special_inst = package[6]
+
+            formatted_package = Package(package_id, destination_address, city, state, deliver_by, mass,
+                                        special_inst)
+            # will this allow you to load hash table?
+            # return int(package_id), formatted_package
+            myHash.insert(package_id, formatted_package)
+
+
 # HashTable class using chaining.
 class ChainingHashTable:
     # Constructor with optional initial capacity parameter.
@@ -23,7 +49,7 @@ class ChainingHashTable:
     #     # insert the item to the end of the bucket list.
     #     bucket_list.append(item)
 
-    def insert(self, key, item):  # does insert and update
+    def insert(self, key, package):  # does insert and update
         # use  built-in hash() to define correct bucket and create bucket_list where this item will go.
         bucket = hash(key) % len(self.table)
         bucket_list = self.table[bucket]
@@ -32,11 +58,11 @@ class ChainingHashTable:
         for kv in bucket_list:
             # print(kv)
             if kv[0] == key:
-                kv[1] = item
+                kv[1] = package
                 return True
 
         # if not, insert the item to the end of the bucket list.
-        key_value = [key, item]
+        key_value = [key, package]
         bucket_list.append(key_value)
         return True
 
@@ -94,38 +120,41 @@ class ChainingHashTable:
                 bucket_list.remove([kv[0], kv[1]])
 
 
-bestMovies = [
-    [1, 'Citizen Kane -1941'],
-    [2, 'Casablanca - 1942'],
-    [3, 'The Godfather - 1972'],
-    [4, 'Gone with the Wind - 1939'],
-    [5, 'Lawrence of Arabia - 1962'],
-    [6, 'The Wizard of Oz - 1939'],
-    [7, 'The Graduate - 1967'],
-    [8, 'On the Waterfront - 1954'],
-    [9, 'Schindler\'s List - 1993'],
-    [10, 'Singin\' in the Rain - 1952'],
-    [11, 'Star Wars - 1977']
-]
+# bestMovies = [
+#     [1, 'Citizen Kane -1941'],
+#     [2, 'Casablanca - 1942'],
+#     [3, 'The Godfather - 1972'],
+#     [4, 'Gone with the Wind - 1939'],
+#     [5, 'Lawrence of Arabia - 1962'],
+#     [6, 'The Wizard of Oz - 1939'],
+#     [7, 'The Graduate - 1967'],
+#     [8, 'On the Waterfront - 1954'],
+#     [9, 'Schindler\'s List - 1993'],
+#     [10, 'Singin\' in the Rain - 1952'],
+#     [11, 'Star Wars - 1977']
+# ]
 
 myHash = ChainingHashTable()
+# myHash.insert(bestMovies[0][0], bestMovies[0][1])
+# print(myHash.table)
+#
+# myHash.insert(bestMovies[10][0], bestMovies[10][1])
+# print(myHash.table)
+#
+# myHash.insert(1, 'Star Trek - 1979')
+# print(myHash.table)
+#
+# print(myHash.search(1))
+# print(myHash.search(11))
+#
+# myHash.remove(1)
+# print(myHash.search(1))
+# print(myHash.table)
+#
+# myHash.remove(11)
+# print(myHash.search(11))
+# print(myHash.table)
 
-myHash.insert(bestMovies[0][0], bestMovies[0][1])
-print(myHash.table)
+# Load package data from CSV
+input_package_data('WGUPS_Package_File.csv')
 
-myHash.insert(bestMovies[10][0], bestMovies[10][1])
-print(myHash.table)
-
-myHash.insert(1, 'Star Trek - 1979')
-print(myHash.table)
-
-print(myHash.search(1))
-print(myHash.search(11))
-
-myHash.remove(1)
-print(myHash.search(1))
-print(myHash.table)
-
-myHash.remove(11)
-print(myHash.search(11))
-print(myHash.table)

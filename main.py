@@ -18,9 +18,10 @@ def input_package_data(file_name):
             destination_address = package[1]
             city = package[2]
             state = package[3]
-            deliver_by = package[4]
-            mass = package[5]
-            special_inst = package[6]
+            zip = package[4]
+            deliver_by = package[5]
+            mass = package[6]
+            special_inst = package[7]
 
             formatted_package = Package(package_id, destination_address, city, state, deliver_by, mass,
                                         special_inst)
@@ -134,7 +135,7 @@ class ChainingHashTable:
 #     [11, 'Star Wars - 1977']
 # ]
 
-myHash = ChainingHashTable()
+myHash = ChainingHashTable(50)
 # myHash.insert(bestMovies[0][0], bestMovies[0][1])
 # print(myHash.table)
 #
@@ -158,3 +159,6 @@ myHash = ChainingHashTable()
 # Load package data from CSV
 input_package_data('WGUPS_Package_File.csv')
 
+# test print hash table
+for i in range(len(myHash.table)):
+    print('ID: {}; Package Info: {}'.format(i+1, myHash.search(i+1)))

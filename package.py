@@ -4,7 +4,7 @@ import math
 
 class Package:
     def __init__(self, package_id, destination_address, city, state, deliver_by, mass, special_inst):
-        self.package_id = package_id
+        self.package_id = int(package_id)
         self.destination_address = destination_address
         self.city = city
         self.state = state

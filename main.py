@@ -23,7 +23,7 @@ def input_package_data(file_name):
             mass = package[6]
             special_inst = package[7]
 
-            formatted_package = Package(package_id, destination_address, city, state, deliver_by, mass,
+            formatted_package = Package(package_id, destination_address, city, state, zip, deliver_by, mass,
                                         special_inst)
             # will this allow you to load hash table?
             # return int(package_id), formatted_package

@@ -11,6 +11,11 @@ from truck import Truck
 distanceData = []
 addressData = []
 
+# create 3 truck objects
+truck_123 = Truck(123)
+truck_456 = Truck(456)
+truck_789 = Truck(789)
+
 
 def input_package_data(file_name):
     with open(file_name) as all_packages:

@@ -140,5 +140,6 @@ input_distance_data('WGUPS_Distance_Table.csv')
 
 input_address_data('WGUPS_Distance_Table.csv')
 # test addressData list
-# for address in addressData:
-#     print(address)
+for address in addressData:
+    print(address)
+

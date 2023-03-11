@@ -22,15 +22,15 @@ def input_package_data(file_name):
     with open(file_name) as all_packages:
         package_data = csv.reader(all_packages, delimiter=',')
         next(package_data)  # SKIP header or delete this line and header line in CSV later
-        for package in package_data:
-            package_id = int(package[0])
-            destination_address = package[1]
-            city = package[2]
-            state = package[3]
-            zip_code = int(package[4])
-            deliver_by = package[5]
-            mass = int(package[6])
-            special_inst = package[7]
+        for package_row in package_data:
+            package_id = int(package_row[0])
+            destination_address = package_row[1]
+            city = package_row[2]
+            state = package_row[3]
+            zip_code = int(package_row[4])
+            deliver_by = package_row[5]
+            mass = int(package_row[6])
+            special_inst = package_row[7]
 
             early_delivery = False
             if deliver_by != 'EOD':
@@ -75,16 +75,16 @@ def distance_between(address1, address2):
 
 
 # begin function to return shortest distance from arg1 in items on truck
-def shortest_distance(from_address, truck_items_list):
+def shortest_distance(from_address, onboard_packages):
     shortest_early = 9999
     shortest_eod = 9999
-    for package_item in truck_items_list:
-        if not package_item.early_delivery:
-            if distance_between(from_address, package_item.destination_address) < shortest_eod:
-                shortest_eod = distance_between(from_address, package_item.destination_address)
-        else:
+    for package_item in onboard_packages:
+        if package_item.early_delivery:
             if distance_between(from_address, package_item.destination_address) < shortest_early:
                 shortest_early = distance_between(from_address, package_item.destination_address)
+        else:
+            if distance_between(from_address, package_item.destination_address) < shortest_eod:
+                shortest_eod = distance_between(from_address, package_item.destination_address)
     if shortest_early != 9999:
         return shortest_early
     else:
@@ -93,105 +93,106 @@ def shortest_distance(from_address, truck_items_list):
 
 def load_truck():  # manually
     # load 1st truck   *** take small load of early packages w early return to hub to run truck3?
-    truck_1.item_list.append(myHash.search(37))
+    truck_1.packages_onboard.append(myHash.search(37))
     truck_1.num_items_on_truck += 1
-    truck_1.item_list.append(myHash.search(40))
+    truck_1.packages_onboard.append(myHash.search(40))
     truck_1.num_items_on_truck += 1
-    truck_1.item_list.append(myHash.search(34))
+    truck_1.packages_onboard.append(myHash.search(34))
     truck_1.num_items_on_truck += 1
-    truck_1.item_list.append(myHash.search(1))  # Deliver by 10:30
+    truck_1.packages_onboard.append(myHash.search(1))  # Deliver by 10:30
     truck_1.num_items_on_truck += 1
-    truck_1.item_list.append(myHash.search(29))
+    truck_1.packages_onboard.append(myHash.search(29))
     truck_1.num_items_on_truck += 1
-    truck_1.item_list.append(myHash.search(30))
+    truck_1.packages_onboard.append(myHash.search(30))
     truck_1.num_items_on_truck += 1
-    truck_1.item_list.append(myHash.search(31))
+    truck_1.packages_onboard.append(myHash.search(31))
     truck_1.num_items_on_truck += 1
-    truck_1.item_list.append(myHash.search(39))
+    truck_1.packages_onboard.append(myHash.search(39))
     truck_1.num_items_on_truck += 1
     print(f'Number of items on truck_1: {truck_1.num_items_on_truck}')
 
     # load 2nd truck    no time constraints
-    truck_2.item_list.append(myHash.search(3))
+    truck_2.packages_onboard.append(myHash.search(3))
     truck_2.num_items_on_truck += 1
-    truck_2.item_list.append(myHash.search(38))
+    truck_2.packages_onboard.append(myHash.search(38))
     truck_2.num_items_on_truck += 1
-    truck_2.item_list.append(myHash.search(36))
+    truck_2.packages_onboard.append(myHash.search(36))
     truck_2.num_items_on_truck += 1
-    truck_2.item_list.append(myHash.search(18))  # must be on truck_2
+    truck_2.packages_onboard.append(myHash.search(18))  # must be on truck_2
     truck_2.num_items_on_truck += 1
-    truck_2.item_list.append(myHash.search(17))
+    truck_2.packages_onboard.append(myHash.search(17))
     truck_2.num_items_on_truck += 1
-    truck_2.item_list.append(myHash.search(12))
+    truck_2.packages_onboard.append(myHash.search(12))
     truck_2.num_items_on_truck += 1
-    truck_2.item_list.append(myHash.search(11))
+    truck_2.packages_onboard.append(myHash.search(11))
     truck_2.num_items_on_truck += 1
-    truck_2.item_list.append(myHash.search(23))
+    truck_2.packages_onboard.append(myHash.search(23))
     truck_2.num_items_on_truck += 1
-    truck_2.item_list.append(myHash.search(26))
+    truck_2.packages_onboard.append(myHash.search(26))
     truck_2.num_items_on_truck += 1
-    truck_2.item_list.append(myHash.search(21))
+    truck_2.packages_onboard.append(myHash.search(21))
     truck_2.num_items_on_truck += 1
-    truck_2.item_list.append(myHash.search(4))
+    truck_2.packages_onboard.append(myHash.search(4))
     truck_2.num_items_on_truck += 1
-    truck_2.item_list.append(myHash.search(22))
+    truck_2.packages_onboard.append(myHash.search(22))
     truck_2.num_items_on_truck += 1
-    truck_2.item_list.append(myHash.search(24))
+    truck_2.packages_onboard.append(myHash.search(24))
     truck_2.num_items_on_truck += 1
-    truck_2.item_list.append(myHash.search(5))
+    truck_2.packages_onboard.append(myHash.search(5))
     truck_2.num_items_on_truck += 1
-    truck_2.item_list.append(myHash.search(7))
+    truck_2.packages_onboard.append(myHash.search(7))
     truck_2.num_items_on_truck += 1
-    truck_2.item_list.append(myHash.search(33))
+    truck_2.packages_onboard.append(myHash.search(33))
     truck_2.num_items_on_truck += 1
 
     print(f'Number of items on truck_2: {truck_2.num_items_on_truck}')
 
     # load 3rd truck    late arrivals
-    truck_3.item_list.append(myHash.search(15))  # Deliver by 9:00
+    truck_3.packages_onboard.append(myHash.search(15))  # Deliver by 9:00
     truck_3.num_items_on_truck += 1
-    truck_3.item_list.append(myHash.search(14))  # Deliver by 10:30 w 15, 19
+    truck_3.packages_onboard.append(myHash.search(14))  # Deliver by 10:30 w 15, 19
     truck_3.num_items_on_truck += 1
-    truck_3.item_list.append(myHash.search(13))  # Deliver by 10:30
+    truck_3.packages_onboard.append(myHash.search(13))  # Deliver by 10:30
     truck_3.num_items_on_truck += 1
-    truck_3.item_list.append(myHash.search(16))  # Deliver by 10:30 w 13, 15
+    truck_3.packages_onboard.append(myHash.search(16))  # Deliver by 10:30 w 13, 15
     truck_3.num_items_on_truck += 1
-    truck_3.item_list.append(myHash.search(19))  # Deliver w 14, 16
+    truck_3.packages_onboard.append(myHash.search(19))  # Deliver w 14, 16
     truck_3.num_items_on_truck += 1
-    truck_3.item_list.append(myHash.search(20))  # Deliver by 10:30 w 13, 15
+    truck_3.packages_onboard.append(myHash.search(20))  # Deliver by 10:30 w 13, 15
     truck_3.num_items_on_truck += 1
-    truck_3.item_list.append(myHash.search(28))  # arrives at HUB 9:05
+    truck_3.packages_onboard.append(myHash.search(28))  # arrives at HUB 9:05
     truck_3.num_items_on_truck += 1
-    truck_3.item_list.append(myHash.search(32))  # arrives at HUB 9:05
+    truck_3.packages_onboard.append(myHash.search(32))  # arrives at HUB 9:05
     truck_3.num_items_on_truck += 1
-    truck_3.item_list.append(myHash.search(25))  # ** Deliver by 10:30  +++  arrives at HUB 9:05
+    truck_3.packages_onboard.append(myHash.search(25))  # ** Deliver by 10:30  +++  arrives at HUB 9:05
     truck_3.num_items_on_truck += 1
-    truck_3.item_list.append(myHash.search(6))  # Deliver by 10:30
+    truck_3.packages_onboard.append(myHash.search(6))  # Deliver by 10:30
     truck_3.num_items_on_truck += 1
-    truck_3.item_list.append(myHash.search(8))
+    truck_3.packages_onboard.append(myHash.search(8))
     truck_3.num_items_on_truck += 1
-    truck_3.item_list.append(myHash.search(9))  # wrong address, will be corrected at 10:20
+    truck_3.packages_onboard.append(myHash.search(9))  # wrong address, will be corrected at 10:20
     truck_3.num_items_on_truck += 1
-    truck_3.item_list.append(myHash.search(10))
+    truck_3.packages_onboard.append(myHash.search(10))
     truck_3.num_items_on_truck += 1
-    truck_3.item_list.append(myHash.search(2))
+    truck_3.packages_onboard.append(myHash.search(2))
     truck_3.num_items_on_truck += 1
-    truck_3.item_list.append(myHash.search(27))
+    truck_3.packages_onboard.append(myHash.search(27))
     truck_3.num_items_on_truck += 1
-    truck_3.item_list.append(myHash.search(35))
+    truck_3.packages_onboard.append(myHash.search(35))
     truck_3.num_items_on_truck += 1
 
     print(f'Number of items on truck_3: {truck_3.num_items_on_truck}')
 
     print(
         f'Total number of items on trucks: {truck_1.num_items_on_truck + truck_2.num_items_on_truck + truck_3.num_items_on_truck}')
+    print()
 
 
-def deliver_packages(truck):
+def deliver_packages(truck):        # ----------- UNDER CONSTRUCTION ------------
     current_loc = addressData[0]
     shortest = 999
     next_stop = addressData[0]
-    for package_item in truck.item_list:
+    for package_item in truck.packages_onboard:
         if distance_between(current_loc, package_item.destination_address) < shortest:
             shortest = distance_between(current_loc, package_item.destination_address)
             next_stop = package_item.destination_address
@@ -289,20 +290,32 @@ load_truck()
 # print('Distance between HUB and 2835 Main St is: ')
 # print(distance_between('HUB', '2835 Main St'))
 
+# check contents of list
+for package in truck_1.packages_onboard:
+    if package.early_delivery:
+        print(f'{package.destination_address}    *** EARLY DELIVERY ***')
+    else:
+        print(package.destination_address)
+print()
+
+for package in truck_2.packages_onboard:
+    if package.early_delivery:
+        print(f'{package.destination_address}    *** EARLY DELIVERY ***')
+    else:
+        print(package.destination_address)
+print()
+
+for package in truck_3.packages_onboard:
+    if package.early_delivery:
+        print(f'{package.destination_address}    *** EARLY DELIVERY ***')
+    else:
+        print(package.destination_address)
+print()
+#
 # ***   test shortest_distance function VVV   ***
-# print(truck_1.item_list)      # check contents of list
-
-for package in truck_1.item_list:
-    print(package.destination_address)
-print()
-
-for package in truck_2.item_list:
-    print(package.destination_address)
-print()
-
-for package in truck_3.item_list:
-    print(package.destination_address)
-print()
-
-print(shortest_distance('HUB', truck_1.item_list))
-print(shortest_distance('HUB', truck_2.item_list))
+# print(truck_1.item_list)
+# print(truck_2.item_list)
+# print(truck_3.item_list)
+print(shortest_distance('HUB', truck_1.packages_onboard))
+print(shortest_distance('HUB', truck_2.packages_onboard))
+# print(shortest_distance('HUB', truck_3.item_list))

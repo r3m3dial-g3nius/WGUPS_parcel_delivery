@@ -4,5 +4,7 @@ class Truck:
         self.max_items = max_items
         self.num_items_on_truck = loaded_items    # item counter for items on board
         self.truck_avg_speed = 18
-        self.item_list = []
+        self.packages_onboard = []
+        self.early_packages_pending = []
+        self.eod_packages_pending = []
         self.daily_miles_traveled = 0

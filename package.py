@@ -13,5 +13,11 @@ class Package:
         self.mass = mass
         self.special_inst = instructions
 
+        self.early_delivery = False
+        if deliver_by != 'EOD':
+            self.early_delivery = True
+        # self.late_arrival = False
+        self.time_delivered = 0
+
     def __str__(self):  # overwrite print() to print as string, not reference
         return f'{self.package_id}, {self.destination_address}, {self.city}, {self.state}, {self.zip}, {self.deliver_by}, {self.mass}, {self.special_inst}'

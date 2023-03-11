@@ -32,6 +32,12 @@ def input_package_data(file_name):
             mass = int(package[6])
             special_inst = package[7]
 
+            early_delivery = False
+            if deliver_by != 'EOD':
+                early_delivery = True
+            # self.late_arrival = False
+            time_delivered = 0
+
             # create package object using csv values from above
             formatted_package = Package(package_id, destination_address, city, state, zip_code, deliver_by, mass,
                                         special_inst)
@@ -70,14 +76,22 @@ def distance_between(address1, address2):
 
 # begin function to return shortest distance from arg1 in items on truck
 def shortest_distance(from_address, truck_items_list):
-    shortest = 9999
+    shortest_early = 9999
+    shortest_eod = 9999
     for package_item in truck_items_list:
-        if distance_between(from_address, package_item.destination_address) < shortest:
-            shortest = distance_between(from_address, package_item.destination_address)
-    return shortest
+        if not package_item.early_delivery:
+            if distance_between(from_address, package_item.destination_address) < shortest_eod:
+                shortest_eod = distance_between(from_address, package_item.destination_address)
+        else:
+            if distance_between(from_address, package_item.destination_address) < shortest_early:
+                shortest_early = distance_between(from_address, package_item.destination_address)
+    if shortest_early != 9999:
+        return shortest_early
+    else:
+        return shortest_eod
 
 
-def load_truck():       # manually
+def load_truck():  # manually
     # load 1st truck   *** take small load of early packages w early return to hub to run truck3?
     truck_1.item_list.append(myHash.search(37))
     truck_1.num_items_on_truck += 1
@@ -104,7 +118,7 @@ def load_truck():       # manually
     truck_2.num_items_on_truck += 1
     truck_2.item_list.append(myHash.search(36))
     truck_2.num_items_on_truck += 1
-    truck_2.item_list.append(myHash.search(18)) # must be on truck_2
+    truck_2.item_list.append(myHash.search(18))  # must be on truck_2
     truck_2.num_items_on_truck += 1
     truck_2.item_list.append(myHash.search(17))
     truck_2.num_items_on_truck += 1
@@ -179,9 +193,8 @@ def deliver_packages(truck):
     next_stop = addressData[0]
     for package_item in truck.item_list:
         if distance_between(current_loc, package_item.destination_address) < shortest:
-            shortest = distance_between(current_loc,package_item.destination_address)
+            shortest = distance_between(current_loc, package_item.destination_address)
             next_stop = package_item.destination_address
-
 
 
 # HashTable class using chaining.
@@ -269,6 +282,7 @@ input_address_data('WGUPS_Distance_Table.csv')
 # print(addressData.index('2835 Main St'))
 # print(addressData.index('HUB'))
 
+load_truck()
 # ***   test distance between function   ***
 # print('Distance between 2835 Main St and HUB is: ')
 # print(distance_between('2835 Main St', 'HUB'))
@@ -276,21 +290,19 @@ input_address_data('WGUPS_Distance_Table.csv')
 # print(distance_between('HUB', '2835 Main St'))
 
 # ***   test shortest_distance function VVV   ***
-# load truck_123
-# truck_123.item_list.append(myHash.search(1))
-# truck_123.item_list.append(myHash.search(2))
-# truck_123.item_list.append(myHash.search(3))
-# truck_123.item_list.append(myHash.search(4))
-# truck_123.item_list.append(myHash.search(5))
-#
-# print(truck_123.item_list)      # check contents of list
-#
-# for package in truck_123.item_list:
-#     print(package.destination_address)
-#
-# print(shortest_distance('HUB', truck_123.item_list))
-# print(shortest_distance('300 State St', truck_123.item_list))
+# print(truck_1.item_list)      # check contents of list
 
-load_truck()
+for package in truck_1.item_list:
+    print(package.destination_address)
+print()
 
+for package in truck_2.item_list:
+    print(package.destination_address)
+print()
 
+for package in truck_3.item_list:
+    print(package.destination_address)
+print()
+
+print(shortest_distance('HUB', truck_1.item_list))
+print(shortest_distance('HUB', truck_2.item_list))

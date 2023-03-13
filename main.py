@@ -107,6 +107,8 @@ def load_truck():  # manually
     truck_1.num_items_on_truck += 1
     truck_1.packages_onboard.append(myHash.search(39))
     truck_1.num_items_on_truck += 1
+    for package_item in truck_1.packages_onboard:
+        package_item.package_status == 'ON TRUCK'
     print(f'Number of items on truck_1: {truck_1.num_items_on_truck}')
 
     # load 2nd truck    no time constraints
@@ -142,7 +144,8 @@ def load_truck():  # manually
     truck_2.num_items_on_truck += 1
     truck_2.packages_onboard.append(myHash.search(33))
     truck_2.num_items_on_truck += 1
-
+    for package_item in truck_2.packages_onboard:
+        package_item.package_status == 'ON TRUCK'
     print(f'Number of items on truck_2: {truck_2.num_items_on_truck}')
 
     # load 3rd truck    late arrivals
@@ -178,7 +181,8 @@ def load_truck():  # manually
     truck_3.num_items_on_truck += 1
     truck_3.packages_onboard.append(myHash.search(35))
     truck_3.num_items_on_truck += 1
-
+    for package_item in truck_3.packages_onboard:
+        package_item.package_status == 'ON TRUCK'
     print(f'Number of items on truck_3: {truck_3.num_items_on_truck}')
 
     print(
@@ -186,11 +190,9 @@ def load_truck():  # manually
     print()
 
 
-def deliver_packages(truck):        # ----------- UNDER CONSTRUCTION ------------
-    current_loc = addressData[0]    # HUB
-    shortest = 999
+def deliver_packages(truck):  # ----------- UNDER CONSTRUCTION ------------
+    current_loc = addressData[0]  # HUB
     next_stop = addressData[0]
-    next_package = truck.packages_onboard[0]
     while len(truck.packages_onboard) > 0:
         shortest = shortest_distance(current_loc, truck.packages_onboard)
         for package_item in truck.packages_onboard:
@@ -198,27 +200,20 @@ def deliver_packages(truck):        # ----------- UNDER CONSTRUCTION -----------
                 package_item.package_status = 'DELIVERED'
                 # needs timestamp
                 truck.daily_miles_traveled += shortest
-                next_package = package_item
+                # next_package = package_item
                 next_stop = package_item.destination_address
-        print(f'From: {current_loc} To: {next_stop} Miles: {shortest}')
+                truck.packages_delivered.append(package_item)
+                truck.packages_onboard.remove(package_item)
+                truck.num_items_on_truck -= 1
+                print(f'From: {current_loc} To: {next_stop} Miles: {shortest} Packages remaining: {truck.num_items_on_truck}')
         current_loc = next_stop
-        truck.packages_delivered.append(next_package)
-        truck.packages_onboard.remove(next_package)
-
-
-
-
-        # for package_item in truck.packages_onboard:
-        #     if distance_between(current_loc, package_item.destination_address) < shortest:
-        #         shortest = distance_between(current_loc, package_item.destination_address)
-        #         next_stop = package_item.destination_address
-        #         next_package = package_item
-        # print(f'{next_stop} - {shortest} miles away')
-        # next_package.package_status = 'DELIVERED'
-        # truck.daily_miles_traveled += shortest
-        # current_loc = next_stop
-        # truck.packages_onboard.remove(next_package)
-        # truck.packages_delivered.append(next_package)
+    # return truck to HUB
+    if len(truck.packages_onboard) == 0:
+        truck.daily_miles_traveled += distance_between(current_loc, addressData[0])
+        current_loc = addressData[0]
+    print(len(truck.packages_onboard))
+    print(len(truck.packages_delivered))
+    print(f'Miles traveled: {truck.daily_miles_traveled}')
     # time stamp package
 
 

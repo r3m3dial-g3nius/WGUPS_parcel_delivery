@@ -4,6 +4,7 @@
 # parcel delivery project
 
 import csv
+import datetime
 import math
 from chaininghashtable import ChainingHashTable
 from package import Package
@@ -14,8 +15,13 @@ addressData = []
 
 # create 3 truck objects
 truck_1 = Truck(1)
+truck_1.time_of_departure = datetime.time(8, 00, 00)
+
 truck_2 = Truck(2)
+truck_2.time_of_departure = datetime.time(8, 00, 00)
+
 truck_3 = Truck(3)
+truck_3.time_of_departure = truck_1.time_of_return
 
 
 # input package data to hash table
@@ -32,13 +38,14 @@ def input_package_data(file_name):
             deliver_by = package_row[5]
             mass = int(package_row[6])
             special_inst = package_row[7]
-            time_left_hub = 0  # do not update
-            time_delivered = 0
-            package_status = ''
+            time_left_hub = datetime.time(00, 00, 00)  # do not update
+            time_delivered = datetime.time(00, 00, 00)
+            package_status = 'AT HUB'
 
             # create package object using csv values from above
-            formatted_package = Package(package_id, destination_address, city, state, zip_code, deliver_by, mass,
-                                        special_inst, time_left_hub, time_delivered, package_status)
+            formatted_package = Package(
+                 package_id, destination_address, city, state, zip_code, deliver_by, mass,
+                 special_inst, time_left_hub, time_delivered, package_status)
             # insert that package object into hash table as key:package_id value: package object
             myHash.insert(package_id, formatted_package)
 
@@ -89,7 +96,7 @@ def shortest_distance(from_address, onboard_packages):
         return shortest_eod
 
 
-def load_truck():  # manually
+def load_truck():  # manually + status update + timestamp for departure
     # load 1st truck   *** take small load of early packages w early return to hub to run truck3?
     truck_1.packages_onboard.append(myHash.search(37))
     truck_1.num_items_on_truck += 1
@@ -108,7 +115,9 @@ def load_truck():  # manually
     truck_1.packages_onboard.append(myHash.search(39))
     truck_1.num_items_on_truck += 1
     for package_item in truck_1.packages_onboard:
-        package_item.package_status == 'ON TRUCK'
+        package_item.package_status = 'ON TRUCK 1'
+        package_item.time_left_hub = truck_1.time_of_departure
+
     print(f'Number of items on truck_1: {truck_1.num_items_on_truck}')
 
     # load 2nd truck    no time constraints
@@ -145,7 +154,8 @@ def load_truck():  # manually
     truck_2.packages_onboard.append(myHash.search(33))
     truck_2.num_items_on_truck += 1
     for package_item in truck_2.packages_onboard:
-        package_item.package_status == 'ON TRUCK'
+        package_item.package_status = 'ON TRUCK 2'
+        package_item.time_left_hub = truck_2.time_of_departure
     print(f'Number of items on truck_2: {truck_2.num_items_on_truck}')
 
     # load 3rd truck    late arrivals
@@ -182,7 +192,8 @@ def load_truck():  # manually
     truck_3.packages_onboard.append(myHash.search(35))
     truck_3.num_items_on_truck += 1
     for package_item in truck_3.packages_onboard:
-        package_item.package_status == 'ON TRUCK'
+        package_item.package_status = 'ON TRUCK 3'
+        package_item.time_left_hub = truck_3.time_of_departure
     print(f'Number of items on truck_3: {truck_3.num_items_on_truck}')
 
     print(
@@ -190,22 +201,36 @@ def load_truck():  # manually
     print()
 
 
-def deliver_packages(truck):  # ----------- UNDER CONSTRUCTION ------------
+def deliver_packages(truck):            # ----------- UNDER CONSTRUCTION ------------
     current_loc = addressData[0]  # HUB
     next_stop = addressData[0]
+
+    truck.current_time = truck.time_of_departure      # timestamp
     while len(truck.packages_onboard) > 0:
         shortest = shortest_distance(current_loc, truck.packages_onboard)
+        time_delta = datetime.timedelta(hours=(shortest/truck.truck_avg_speed)) # time to reach next address
+        print(truck.current_time)   # check truck.current_time value
+        print(time_delta)   # check time_delta value
+        print(datetime.timedelta(hours=(shortest/truck.truck_avg_speed)))  # check time_delta value
+
+        print(truck.current_time + time_delta)     # this doesn't work - invalid operator
         for package_item in truck.packages_onboard:
             if distance_between(current_loc, package_item.destination_address) == shortest:
                 package_item.package_status = 'DELIVERED'
-                # needs timestamp
+                # truck.current_time += time_delta
+                truck.current_time += datetime.timedelta(hours=(shortest/truck.truck_avg_speed))  # why error?
+                package_item.time_delivered = truck.current_time
+
+
+
+
                 truck.daily_miles_traveled += shortest
-                # next_package = package_item
                 next_stop = package_item.destination_address
                 truck.packages_delivered.append(package_item)
                 truck.packages_onboard.remove(package_item)
                 truck.num_items_on_truck -= 1
-                print(f'From: {current_loc} To: {next_stop} Miles: {shortest} Packages remaining: {truck.num_items_on_truck}')
+                print(f'From: {current_loc} To: {next_stop} Miles: {shortest} '
+                      f'Packages remaining: {truck.num_items_on_truck}')
         current_loc = next_stop
     # return truck to HUB
     if len(truck.packages_onboard) == 0:
@@ -214,7 +239,6 @@ def deliver_packages(truck):  # ----------- UNDER CONSTRUCTION ------------
     print(len(truck.packages_onboard))
     print(len(truck.packages_delivered))
     print(f'Miles traveled: {truck.daily_miles_traveled}')
-    # time stamp package
 
 
 myHash = ChainingHashTable(40)
@@ -301,4 +325,5 @@ deliver_packages(truck_2)
 print()
 deliver_packages(truck_3)
 print()
-print(f'Total miles traveled: {truck_1.daily_miles_traveled + truck_2.daily_miles_traveled + truck_3.daily_miles_traveled}')
+print(f'Total miles traveled: '
+      f'{truck_1.daily_miles_traveled + truck_2.daily_miles_traveled + truck_3.daily_miles_traveled}')

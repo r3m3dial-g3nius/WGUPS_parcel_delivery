@@ -1,5 +1,6 @@
 import csv
 import math
+import datetime
 
 
 class Package:
@@ -12,9 +13,9 @@ class Package:
         self.deliver_by = deliver_by
         self.mass = mass
         self.special_inst = instructions
-        self.time_left_hub = 0  # do not update
-        self.time_delivered = 0
-        self.package_status = 'AT HUB'
+        self.time_left_hub = datetime.time(00, 00, 00)  # do not update
+        self.time_delivered = datetime.time(00, 00, 00)
+        self.package_status = ''
 
     def __str__(self):  # overwrite print() to print as string, not reference
         return f'{self.package_id}, {self.destination_address}, {self.city}, {self.state}, {self.zip},' \

@@ -1,12 +1,2 @@
-Need to figure out how to load the truck and prioritize early deliveries
-    - distribute those earlies more evenly between truck 1 and 2
-    - truck 1 driver to return early and complete truck 2 route
-
-Do you need separate lists to indicate package status or aid in loading/delivering packages?
-    -
-
-
-Shortest distance funct working only for truck1(hub, truck1list)
-    - errors out on same address in truck2 and truck3's lists
-    - 'ValueError: '5383 South 900 East #104' is not in list'
+# need timestamp for packages when delivered
 

@@ -32,16 +32,13 @@ def input_package_data(file_name):
             deliver_by = package_row[5]
             mass = int(package_row[6])
             special_inst = package_row[7]
-
-            early_delivery = False
-            if deliver_by != 'EOD':
-                early_delivery = True
-            # self.late_arrival = False
+            time_left_hub = 0  # do not update
             time_delivered = 0
+            package_status = ''
 
             # create package object using csv values from above
             formatted_package = Package(package_id, destination_address, city, state, zip_code, deliver_by, mass,
-                                        special_inst)
+                                        special_inst, time_left_hub, time_delivered, package_status)
             # insert that package object into hash table as key:package_id value: package object
             myHash.insert(package_id, formatted_package)
 
@@ -80,7 +77,7 @@ def shortest_distance(from_address, onboard_packages):
     shortest_early = 9999
     shortest_eod = 9999
     for package_item in onboard_packages:
-        if package_item.early_delivery:
+        if package_item.deliver_by != 'EOD':
             if distance_between(from_address, package_item.destination_address) < shortest_early:
                 shortest_early = distance_between(from_address, package_item.destination_address)
         else:
@@ -190,16 +187,42 @@ def load_truck():  # manually
 
 
 def deliver_packages(truck):        # ----------- UNDER CONSTRUCTION ------------
-    current_loc = addressData[0]
+    current_loc = addressData[0]    # HUB
     shortest = 999
     next_stop = addressData[0]
-    for package_item in truck.packages_onboard:
-        if distance_between(current_loc, package_item.destination_address) < shortest:
-            shortest = distance_between(current_loc, package_item.destination_address)
-            next_stop = package_item.destination_address
+    next_package = truck.packages_onboard[0]
+    while len(truck.packages_onboard) > 0:
+        shortest = shortest_distance(current_loc, truck.packages_onboard)
+        for package_item in truck.packages_onboard:
+            if distance_between(current_loc, package_item.destination_address) == shortest:
+                package_item.package_status = 'DELIVERED'
+                # needs timestamp
+                truck.daily_miles_traveled += shortest
+                next_package = package_item
+                next_stop = package_item.destination_address
+        print(f'From: {current_loc} To: {next_stop} Miles: {shortest}')
+        current_loc = next_stop
+        truck.packages_delivered.append(next_package)
+        truck.packages_onboard.remove(next_package)
 
 
-myHash = ChainingHashTable(50)
+
+
+        # for package_item in truck.packages_onboard:
+        #     if distance_between(current_loc, package_item.destination_address) < shortest:
+        #         shortest = distance_between(current_loc, package_item.destination_address)
+        #         next_stop = package_item.destination_address
+        #         next_package = package_item
+        # print(f'{next_stop} - {shortest} miles away')
+        # next_package.package_status = 'DELIVERED'
+        # truck.daily_miles_traveled += shortest
+        # current_loc = next_stop
+        # truck.packages_onboard.remove(next_package)
+        # truck.packages_delivered.append(next_package)
+    # time stamp package
+
+
+myHash = ChainingHashTable(40)
 
 # Load package data from CSV
 input_package_data('WGUPS_Package_File.csv')
@@ -237,32 +260,50 @@ load_truck()
 # print('Distance between HUB and 2835 Main St is: ')
 # print(distance_between('HUB', '2835 Main St'))
 
-# check contents of list
-for package in truck_1.packages_onboard:
-    if package.early_delivery:
-        print(f'{package.destination_address}    *** EARLY DELIVERY ***')
-    else:
-        print(package.destination_address)
-print()
-
-for package in truck_2.packages_onboard:
-    if package.early_delivery:
-        print(f'{package.destination_address}    *** EARLY DELIVERY ***')
-    else:
-        print(package.destination_address)
-print()
-
-for package in truck_3.packages_onboard:
-    if package.early_delivery:
-        print(f'{package.destination_address}    *** EARLY DELIVERY ***')
-    else:
-        print(package.destination_address)
-print()
+# ***   check contents of list   ***
+# for package in truck_1.packages_onboard:
+#     if package.deliver_by != 'EOD':
+#         print(f'{package.destination_address}    *** EARLY DELIVERY ***')
+#     else:
+#         print(package.destination_address)
+# print()
 #
+# for package in truck_2.packages_onboard:
+#     if package.deliver_by != 'EOD':
+#         print(f'{package.destination_address}    *** EARLY DELIVERY ***')
+#     else:
+#         print(package.destination_address)
+# print()
+#
+# for package in truck_3.packages_onboard:
+#     if package.deliver_by != 'EOD':
+#         print(f'{package.destination_address}    *** EARLY DELIVERY ***')
+#     else:
+#         print(package.destination_address)
+# print()
+
+
 # ***   test shortest_distance function VVV   ***
+
 # print(truck_1.item_list)
 # print(truck_2.item_list)
 # print(truck_3.item_list)
-print(shortest_distance('HUB', truck_1.packages_onboard))
-print(shortest_distance('HUB', truck_2.packages_onboard))
-# print(shortest_distance('HUB', truck_3.item_list))
+# print(shortest_distance('HUB', truck_1.packages_onboard))
+# print(shortest_distance('HUB', truck_2.packages_onboard))
+# print(shortest_distance('HUB', truck_3.packages_onboard))
+
+# ***   Search for address   ***
+# for package in truck_2.packages_onboard:
+#     if package.destination_address == '5383 South 900 East #104':
+#         print(f'{package.destination_address} --- address found')
+#     else:
+#         print(package.destination_address)
+#
+
+deliver_packages(truck_1)
+print()
+deliver_packages(truck_2)
+print()
+deliver_packages(truck_3)
+print()
+print(f'Total miles traveled: {truck_1.daily_miles_traveled + truck_2.daily_miles_traveled + truck_3.daily_miles_traveled}')

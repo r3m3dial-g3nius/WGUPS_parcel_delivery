@@ -15,10 +15,10 @@ addressData = []
 
 # create 3 truck objects
 truck_1 = Truck(1)
-truck_1.time_of_departure = datetime.time(8, 00, 00)
+truck_1.time_of_departure = datetime.timedelta(hours=8)
 
 truck_2 = Truck(2)
-truck_2.time_of_departure = datetime.time(8, 00, 00)
+truck_2.time_of_departure = datetime.timedelta(hours=8)
 
 truck_3 = Truck(3)
 truck_3.time_of_departure = truck_1.time_of_return
@@ -38,8 +38,8 @@ def input_package_data(file_name):
             deliver_by = package_row[5]
             mass = int(package_row[6])
             special_inst = package_row[7]
-            time_left_hub = datetime.time(00, 00, 00)  # do not update
-            time_delivered = datetime.time(00, 00, 00)
+            time_left_hub = datetime.timedelta(hours=0)  # do not update
+            time_delivered = datetime.timedelta(hours=0)
             package_status = 'AT HUB'
 
             # create package object using csv values from above
@@ -201,45 +201,41 @@ def load_truck():  # manually + status update + timestamp for departure
     print()
 
 
-def deliver_packages(truck):            # ----------- UNDER CONSTRUCTION ------------
+def deliver_packages(truck):            # ----------- UNDER CONSTRUCTION -----------------------------------
+    print(f'Truck {truck.truck_id} time of departure: {truck.time_of_departure}')   # testing departure time
     current_loc = addressData[0]  # HUB
     next_stop = addressData[0]
-
     truck.current_time = truck.time_of_departure      # timestamp
     while len(truck.packages_onboard) > 0:
         shortest = shortest_distance(current_loc, truck.packages_onboard)
         time_delta = datetime.timedelta(hours=(shortest/truck.truck_avg_speed)) # time to reach next address
-        print(truck.current_time)   # check truck.current_time value
-        print(time_delta)   # check time_delta value
-        print(datetime.timedelta(hours=(shortest/truck.truck_avg_speed)))  # check time_delta value
-
-        print(truck.current_time + time_delta)     # this doesn't work - invalid operator
+        # print(truck.current_time + time_delta)     # this doesn't work - invalid operator
         for package_item in truck.packages_onboard:
             if distance_between(current_loc, package_item.destination_address) == shortest:
                 package_item.package_status = 'DELIVERED'
-                # truck.current_time += time_delta
                 truck.current_time += datetime.timedelta(hours=(shortest/truck.truck_avg_speed))  # why error?
                 package_item.time_delivered = truck.current_time
-
-
-
-
                 truck.daily_miles_traveled += shortest
                 next_stop = package_item.destination_address
                 truck.packages_delivered.append(package_item)
                 truck.packages_onboard.remove(package_item)
                 truck.num_items_on_truck -= 1
                 print(f'From: {current_loc} To: {next_stop} Miles: {shortest} '
+                      f'Time Delivered {package_item.time_delivered} '
                       f'Packages remaining: {truck.num_items_on_truck}')
         current_loc = next_stop
     # return truck to HUB
     if len(truck.packages_onboard) == 0:
         truck.daily_miles_traveled += distance_between(current_loc, addressData[0])
+        truck.current_time += datetime.timedelta(
+            hours=(distance_between(current_loc, addressData[0])/truck.truck_avg_speed))
         current_loc = addressData[0]
-    print(len(truck.packages_onboard))
-    print(len(truck.packages_delivered))
-    print(f'Miles traveled: {truck.daily_miles_traveled}')
-
+    print()
+    print(f'Truck {truck.truck_id} returned to hub at {truck.current_time}')
+    print(f'   Number of packages onboard truck: {len(truck.packages_onboard)}')
+    print(f'   Number of packages delivered: {len(truck.packages_delivered)}')
+    print(f'   Miles traveled: {truck.daily_miles_traveled}')
+# -------------------------------- ^^^^   UNDER CONSTRUCTION  ^^^^ --------------------------------------
 
 myHash = ChainingHashTable(40)
 
@@ -318,6 +314,9 @@ load_truck()
 #     else:
 #         print(package.destination_address)
 #
+
+# for package_item in truck_1.packages_onboard:
+#     print(f'f Status of {package_item.destination_address}: {package_item.package_status}')
 
 deliver_packages(truck_1)
 print()

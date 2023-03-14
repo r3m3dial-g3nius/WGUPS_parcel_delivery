@@ -1,2 +1,3 @@
 # need timestamp for packages when delivered
-
+# h, m, s = truck.current_time.split(":")
+# timeobj = datetime.timedelta(hours=int(h), minutes=int(m), seconds=int(s))

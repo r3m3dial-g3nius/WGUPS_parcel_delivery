@@ -126,7 +126,7 @@ def load_trucks():  # manually + status update + timestamp for departure
         package_item.package_status = 'ON TRUCK 1'
         package_item.time_left_hub = truck_1.time_of_departure
 
-    print(f'Number of items on truck_1: {truck_1.num_items_on_truck}')
+    # print(f'Number of items on truck_1: {truck_1.num_items_on_truck}')
 
     # load 2nd truck
     truck_2.packages_onboard.append(myHash.search(2))
@@ -165,7 +165,7 @@ def load_trucks():  # manually + status update + timestamp for departure
     for package_item in truck_2.packages_onboard:
         package_item.package_status = 'ON TRUCK 2'
         package_item.time_left_hub = truck_2.time_of_departure
-    print(f'Number of items on truck_2: {truck_2.num_items_on_truck}')
+    # print(f'Number of items on truck_2: {truck_2.num_items_on_truck}')
 
     # load 3rd truck    late arrivals
     truck_3.packages_onboard.append(myHash.search(10))
@@ -202,16 +202,16 @@ def load_trucks():  # manually + status update + timestamp for departure
     for package_item in truck_3.packages_onboard:
         package_item.package_status = 'ON TRUCK 3'
         package_item.time_left_hub = truck_3.time_of_departure
-    print(f'Number of items on truck_3: {truck_3.num_items_on_truck}')
-
-    print(
-        f'Total number of items on trucks: '
-        f'{truck_1.num_items_on_truck + truck_2.num_items_on_truck + truck_3.num_items_on_truck}')
-    print()
+    # print(f'Number of items on truck_3: {truck_3.num_items_on_truck}')
+    #
+    # print(
+    #     f'Total number of items on trucks: '
+    #     f'{truck_1.num_items_on_truck + truck_2.num_items_on_truck + truck_3.num_items_on_truck}')
+    # print()
 
 
 def deliver_packages(truck):
-    print(f'Truck {truck.truck_id} time of departure: {truck.time_of_departure}')  # testing departure time
+    # print(f'Truck {truck.truck_id} time of departure: {truck.time_of_departure}')  # testing departure time
     current_loc = addressData[0]  # HUB
     this_stop = addressData[0]
     truck.current_time = truck.time_of_departure
@@ -228,9 +228,9 @@ def deliver_packages(truck):
                 truck.packages_delivered.append(package_item)
                 truck.packages_onboard.remove(package_item)
                 truck.num_items_on_truck -= 1
-                print(f'Package ID: {package_item.package_id} To: {this_stop} Miles: {shortest} '
-                      f'Time Delivered {package_item.time_delivered} '
-                      f'Packages remaining: {truck.num_items_on_truck}')
+                # print(f'Package ID: {package_item.package_id} To: {this_stop} Miles: {shortest} '
+                #       f'Time Delivered {package_item.time_delivered} '
+                #       f'Packages remaining: {truck.num_items_on_truck}')
             current_loc = this_stop
 
         # for packages not specified early delivery but at same address
@@ -241,9 +241,9 @@ def deliver_packages(truck):
                     truck.packages_delivered.append(remaining_package)
                     truck.packages_onboard.remove(remaining_package)
                     truck.num_items_on_truck -= 1
-                    print(f'Package ID: {remaining_package.package_id} To: SAME ADDRESS Miles: 0 '
-                          f'Time Delivered {remaining_package.time_delivered} '
-                          f'Packages remaining: {truck.num_items_on_truck}')
+                    # print(f'Package ID: {remaining_package.package_id} To: SAME ADDRESS Miles: 0 '
+                    #       f'Time Delivered {remaining_package.time_delivered} '
+                    #       f'Packages remaining: {truck.num_items_on_truck}')
 
     # return truck to HUB
     if len(truck.packages_onboard) == 0:
@@ -258,11 +258,68 @@ def deliver_packages(truck):
             truck_3.time_of_departure = truck.time_of_return
 
     # check data w timestamp/mileage
-    print()
-    print(f'Truck {truck.truck_id} returned to hub at {truck.time_of_return}')
-    print(f'   Number of packages onboard truck: {len(truck.packages_onboard)}')
-    print(f'   Number of packages delivered: {len(truck.packages_delivered)}')
-    print(f'   Miles traveled: {truck.daily_miles_traveled}')
+    # print()
+    # print(f'Truck {truck.truck_id} returned to hub at {truck.time_of_return}')
+    # print(f'   Number of packages onboard truck: {len(truck.packages_onboard)}')
+    # print(f'   Number of packages delivered: {len(truck.packages_delivered)}')
+    # print(f'   Miles traveled: {truck.daily_miles_traveled}')
+
+
+def print_menu_options():
+    print('***   WGUPS Menu Options   ***')
+    print('----------------------------------------------------------')
+    print('   1. Print All Package Status and Total Mileage')
+    print('   2. Print Single Package Status and Time')
+    print('   3. Print All Package Status and Time')
+    print('   4. Exit')
+    print('----------------------------------------------------------')
+
+
+def wgups_package_tracker():
+    print_menu_options()
+    user_input = input('Please choose option 1, 2, 3, or 4: ')
+    if user_input == '4':
+        print()
+        print('Thank you for choosing WGUPS!')
+        print('Have a great day')
+        print('Program terminated')
+        return
+    # while user_input != '4':
+    if user_input == '1':
+        print()
+        print('Print all package status and total mileage')
+        print()
+        print('----------------------------------------------------------')
+        print()
+        wgups_package_tracker()
+    elif user_input == '2':
+        print()
+        print('Print single package status and time')
+        print()
+        print('----------------------------------------------------------')
+        print()
+
+        wgups_package_tracker()
+    elif user_input == '3':     # fix me
+        print()
+        # for package_item in myHash.table:
+        #     print(package_item)
+        for i in range(len(myHash.table)):
+            print('ID: {}; Package Info: {}'.format(i+1, myHash.search(i+1)))
+        print()
+        print('----------------------------------------------------------')
+        print()
+        wgups_package_tracker()
+    else:
+        print()
+        print()
+        print('Please make a valid selection')
+        print()
+        print()
+        wgups_package_tracker()
+
+
+
 
 
 myHash = ChainingHashTable(40)
@@ -295,13 +352,14 @@ load_trucks()
 
 # deliver packages
 deliver_packages(truck_1)
-print()
 deliver_packages(truck_2)
-print()
 deliver_packages(truck_3)
-print()
-print(f'Truck 1 - Total miles: {truck_1.daily_miles_traveled}')
-print(f'Truck 2 - Total miles: {truck_2.daily_miles_traveled}')
-print(f'Truck 3 - Total miles: {truck_3.daily_miles_traveled}')
-print(f'Total miles traveled: '
-      f'{truck_1.daily_miles_traveled + truck_2.daily_miles_traveled + truck_3.daily_miles_traveled}')
+
+# check mileage
+# print(f'Truck 1 - Total miles: {truck_1.daily_miles_traveled}')
+# print(f'Truck 2 - Total miles: {truck_2.daily_miles_traveled}')
+# print(f'Truck 3 - Total miles: {truck_3.daily_miles_traveled}')
+# print(f'Total miles traveled: '
+#       f'{truck_1.daily_miles_traveled + truck_2.daily_miles_traveled + truck_3.daily_miles_traveled}')
+
+wgups_package_tracker()

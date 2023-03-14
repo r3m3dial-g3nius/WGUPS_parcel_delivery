@@ -312,8 +312,10 @@ def wgups_package_tracker():
         wgups_package_tracker()
     else:
         print()
+        print('Sorry! I don\'t recognize that selection')
+        print(' ¯\_(ツ)_/¯ ')
         print()
-        print('Please make a valid selection')
+        print('Please try again')
         print()
         print()
         wgups_package_tracker()

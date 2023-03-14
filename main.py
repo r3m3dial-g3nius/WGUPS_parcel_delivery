@@ -44,8 +44,8 @@ def input_package_data(file_name):
 
             # create package object using csv values from above
             formatted_package = Package(
-                 package_id, destination_address, city, state, zip_code, deliver_by, mass,
-                 special_inst, time_left_hub, time_delivered, package_status)
+                package_id, destination_address, city, state, zip_code, deliver_by, mass,
+                special_inst, time_left_hub, time_delivered, package_status)
             # insert that package object into hash table as key:package_id value: package object
             myHash.insert(package_id, formatted_package)
 
@@ -96,6 +96,7 @@ def shortest_distance(from_address, onboard_packages):
         return shortest_eod
 
 
+# load trucks, set time of departure
 def load_truck():  # manually + status update + timestamp for departure
     # load 1st truck   *** take small load of early packages w early return to hub to run truck3?
     truck_1.packages_onboard.append(myHash.search(37))
@@ -201,19 +202,19 @@ def load_truck():  # manually + status update + timestamp for departure
     print()
 
 
-def deliver_packages(truck):            # ----------- UNDER CONSTRUCTION -----------------------------------
-    print(f'Truck {truck.truck_id} time of departure: {truck.time_of_departure}')   # testing departure time
+def deliver_packages(truck):
+    print(f'Truck {truck.truck_id} time of departure: {truck.time_of_departure}')  # testing departure time
     current_loc = addressData[0]  # HUB
     next_stop = addressData[0]
-    truck.current_time = truck.time_of_departure      # timestamp
+    truck.current_time = truck.time_of_departure  # timestamp
     while len(truck.packages_onboard) > 0:
         shortest = shortest_distance(current_loc, truck.packages_onboard)
-        time_delta = datetime.timedelta(hours=(shortest/truck.truck_avg_speed)) # time to reach next address
+        time_delta = datetime.timedelta(hours=(shortest / truck.truck_avg_speed))  # time to reach next address
         # print(truck.current_time + time_delta)     # this doesn't work - invalid operator
         for package_item in truck.packages_onboard:
             if distance_between(current_loc, package_item.destination_address) == shortest:
                 package_item.package_status = 'DELIVERED'
-                truck.current_time += datetime.timedelta(hours=(shortest/truck.truck_avg_speed))  # why error?
+                truck.current_time += datetime.timedelta(hours=(shortest / truck.truck_avg_speed))  # why error?
                 package_item.time_delivered = truck.current_time
                 truck.daily_miles_traveled += shortest
                 next_stop = package_item.destination_address
@@ -228,14 +229,18 @@ def deliver_packages(truck):            # ----------- UNDER CONSTRUCTION -------
     if len(truck.packages_onboard) == 0:
         truck.daily_miles_traveled += distance_between(current_loc, addressData[0])
         truck.current_time += datetime.timedelta(
-            hours=(distance_between(current_loc, addressData[0])/truck.truck_avg_speed))
+            hours=(distance_between(current_loc, addressData[0]) / truck.truck_avg_speed))
         current_loc = addressData[0]
+        truck.time_of_return = truck.current_time
+        # if truck_1, update truck_3 time of departure = truck_1 time of return to hub
+        if truck.truck_id == 1:
+            truck_3.time_of_departure = truck.time_of_return
     print()
-    print(f'Truck {truck.truck_id} returned to hub at {truck.current_time}')
+    print(f'Truck {truck.truck_id} returned to hub at {truck.time_of_return}')
     print(f'   Number of packages onboard truck: {len(truck.packages_onboard)}')
     print(f'   Number of packages delivered: {len(truck.packages_delivered)}')
     print(f'   Miles traveled: {truck.daily_miles_traveled}')
-# -------------------------------- ^^^^   UNDER CONSTRUCTION  ^^^^ --------------------------------------
+
 
 myHash = ChainingHashTable(40)
 

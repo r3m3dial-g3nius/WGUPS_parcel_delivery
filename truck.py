@@ -13,3 +13,4 @@ class Truck:
         self.time_of_departure = datetime.timedelta(hours=0)
         self.current_time = datetime.timedelta(hours=0)
         self.time_of_return = datetime.timedelta(hours=0)
+        self.truck_status = 'AT HUB'

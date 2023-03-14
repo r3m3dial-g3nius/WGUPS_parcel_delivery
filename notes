@@ -1,3 +1,42 @@
 # need timestamp for packages when delivered
 # h, m, s = truck.current_time.split(":")
 # timeobj = datetime.timedelta(hours=int(h), minutes=int(m), seconds=int(s))
+
+
+    # for packages not specified early delivery but at same address
+    #     for package_item in truck.packages_onboard:
+    #         if package_item.destination_address == current_loc:
+    #             package_item.time_delivered = truck.current_time
+    #             package_item.package_status = 'DELIVERED'
+    #             truck.packages_delivered.append(package_item)
+    #             truck.packages_onboard.remove(package_item)
+    #             truck.num_items_on_truck -= 1
+    #             print(f'Package ID: {package_item.package_id} To: SAME ADDRESS Miles: 0 '
+    #                   f'Time Delivered {package_item.time_delivered} '
+    #                   f'Packages remaining: {truck.num_items_on_truck}')
+
+Truck 3 returned to hub at 12:06:20
+   Number of packages onboard truck: 0
+   Number of packages delivered: 14
+   Miles traveled: 45.7
+
+Truck 1 - Total miles: 28.200000000000003
+Truck 2 - Total miles: 46.400000000000006
+Truck 3 - Total miles: 45.7
+Total miles traveled: 120.30000000000001
+
+Process finished with exit code 0
+
+---------------------------------------
+
+Truck 3 returned to hub at 12:19:40
+   Number of packages onboard truck: 0
+   Number of packages delivered: 15
+   Miles traveled: 51.2
+
+Truck 1 - Total miles: 26.7
+Truck 2 - Total miles: 34.8
+Truck 3 - Total miles: 51.2
+Total miles traveled: 112.7
+
+Process finished with exit code 0

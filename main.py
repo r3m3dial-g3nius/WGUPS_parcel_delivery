@@ -1,8 +1,8 @@
-# Steven Bennett
-# Student ID: 003761827
+# Steven Bennett - Student ID: 003761827
 # C950 PA
 # parcel delivery project
 
+import os
 import csv
 import datetime
 import math
@@ -10,21 +10,16 @@ from chaininghashtable import ChainingHashTable
 from package import Package
 from truck import Truck
 
-distanceData = []
-addressData = []
 
-# create 3 truck objects
-truck_1 = Truck(1)
-truck_1.time_of_departure = datetime.timedelta(hours=8)
-
-truck_2 = Truck(2)
-truck_2.time_of_departure = datetime.timedelta(hours=8)
-
-truck_3 = Truck(3)
-truck_3.time_of_departure = truck_1.time_of_return
+# manually create package then insert to hash table
+def create_and_insert_new_package(package_id, destination_address, city, state, zip_code, deliver_by, mass,
+                                  instructions, package_status='AT HUB'):
+    new_package = Package(package_id, destination_address, city, state, zip_code, deliver_by, mass, instructions,
+                          package_status)
+    myHash.insert(new_package.package_id, new_package)
 
 
-# input package data to hash table
+# input package data into hash table
 def input_package_data(file_name):
     with open(file_name) as all_packages:
         package_data = csv.reader(all_packages, delimiter=',')
@@ -38,19 +33,19 @@ def input_package_data(file_name):
             deliver_by = package_row[5]
             mass = int(package_row[6])
             special_inst = package_row[7]
-            time_left_hub = datetime.timedelta(hours=0)  # do not update
-            time_delivered = datetime.timedelta(hours=0)
+            # time_left_hub = datetime.timedelta(hours=0)  # do not update
+            # time_delivered = datetime.timedelta(hours=0)
             package_status = 'AT HUB'
 
             # create package object using csv values from above
             formatted_package = Package(
                 package_id, destination_address, city, state, zip_code, deliver_by, mass,
-                special_inst, time_left_hub, time_delivered, package_status)
+                special_inst, package_status)
             # insert that package object into hash table as key:package_id value: package object
             myHash.insert(package_id, formatted_package)
 
 
-# begin distance data input static function
+# begin distance data input to distanceData list
 def input_distance_data(file_name):
     with open(file_name) as all_data_dist:
         distance_data = csv.reader(all_data_dist, delimiter=',')
@@ -60,7 +55,7 @@ def input_distance_data(file_name):
             distanceData.append(values)
 
 
-# begin address data input static function
+# begin address data input to addressData list
 def input_address_data(file_name):
     with open(file_name) as all_address_data:
         address_data = csv.reader(all_address_data, delimiter=',')
@@ -70,16 +65,16 @@ def input_address_data(file_name):
             addressData.append(values)
 
 
-# begin function to find distance between 2 addresses
+# begin function to find distance between 2 addresses, returns distance as float
 def distance_between(address1, address2):
     if addressData.index(address1) >= addressData.index(address2):
         distance = distanceData[addressData.index(address1)][addressData.index(address2)]
     else:
         distance = distanceData[addressData.index(address2)][addressData.index(address1)]
-    return float(distance)  # -----------> return as float??
+    return float(distance)
 
 
-# begin function to return shortest distance from arg1 in items on truck
+# Nearest Neighbor algorithm! This function to return distance from current location to next closest delivery address
 def shortest_distance(from_address, onboard_packages):
     shortest_early = 9999
     shortest_eod = 9999
@@ -100,7 +95,7 @@ def shortest_distance(from_address, onboard_packages):
         return shortest_eod
 
 
-# load trucks, set time of departure
+# load trucks, set time of departure, updates package status
 def load_trucks():  # manually + status update + timestamp for departure
     # load 1st truck   *** take small load of early packages w early return to hub to run truck3?
     truck_1.packages_onboard.append(myHash.search(39))
@@ -210,11 +205,15 @@ def load_trucks():  # manually + status update + timestamp for departure
     # print()
 
 
+# deliver packages in specified truck, updates location, time, mileage, package status, truck status
 def deliver_packages(truck):
     # print(f'Truck {truck.truck_id} time of departure: {truck.time_of_departure}')  # testing departure time
     current_loc = addressData[0]  # HUB
     this_stop = addressData[0]
     truck.current_time = truck.time_of_departure
+    for package_item in truck.packages_onboard:
+        package_item.time_left_hub = truck.time_of_departure
+        package_item.package_status = f'EN ROUTE on Truck_{truck.truck_id}'
     truck.truck_status = 'ON ROUTE'
     while len(truck.packages_onboard) > 0:
         shortest = shortest_distance(current_loc, truck.packages_onboard)
@@ -233,7 +232,7 @@ def deliver_packages(truck):
                 #       f'Packages remaining: {truck.num_items_on_truck}')
             current_loc = this_stop
 
-        # for packages not specified early delivery but at same address
+            # for packages not specified early delivery but at same address for improved efficiency
             for remaining_package in truck.packages_onboard:
                 if remaining_package.destination_address == current_loc:
                     remaining_package.time_delivered = truck.current_time
@@ -265,66 +264,141 @@ def deliver_packages(truck):
     # print(f'   Miles traveled: {truck.daily_miles_traveled}')
 
 
-def print_menu_options():
-    print('***   WGUPS Menu Options   ***')
-    print('----------------------------------------------------------')
-    print('   1. Print All Package Status and Total Mileage')
-    print('   2. Print Single Package Status and Time')
-    print('   3. Print All Package Status and Time')
-    print('   4. Exit')
-    print('----------------------------------------------------------')
-
-
+# Function for User Interface
 def wgups_package_tracker():
-    print_menu_options()
-    user_input = input('Please choose option 1, 2, 3, or 4: ')
-    if user_input == '4':
-        print()
-        print('Thank you for choosing WGUPS!')
-        print('Have a great day')
-        print('Program terminated')
-        return
-    # while user_input != '4':
-    if user_input == '1':
-        print()
-        print('Print all package status and total mileage')
-        print()
+
+    # prints menu options
+    def print_menu_options():
+        print('***   WGUPS Menu Options   ***')
         print('----------------------------------------------------------')
-        print()
-        wgups_package_tracker()
-    elif user_input == '2':
-        print()
-        print('Print single package status and time')
-        print()
+        print('   1. Print All Package Status and Total Mileage')
+        print('   2. Print Single Package Status and Time')
+        print('   3. Print All Package Status and Time')
+        print('   4. Exit')
         print('----------------------------------------------------------')
         print()
 
-        wgups_package_tracker()
-    elif user_input == '3':     # fix me
+    # set current time for query, returns user entry as timedelta
+    def get_user_time():
+        # user_time = datetime.timedelta(hours=0)
+        return_to_main_menu = False
+
+        while not return_to_main_menu:
+            new_time = input('Please enter current time as HH:MM in 24H format or enter Q to '
+                             'return to Main Menu - ')
+            print('\n' * 3)
+
+            if new_time == 'Q' or new_time == 'q':
+                print('Returning to Main Menu')
+                return_to_main_menu = True
+
+            # if new_time != 'Q' and new_time != 'q':
+            else:
+                if len(new_time) != 5 or new_time[2] != ':':
+                    print('Please try again.')
+                    print('Returning to Main Menu')
+                    return_to_main_menu = True
+
+                elif len(new_time) == 5 and new_time[2] == ':':
+                    h = int(new_time[:2])
+                    m = int(new_time[3:])
+                    if (0 <= h < 24) and (0 <= m < 60):
+                        print(h, m)
+                        new_time = datetime.timedelta(hours=h, minutes=m)
+                        return new_time
+                    else:
+                        print('Please try again:')
+                        print('Returning to Main Menu')
+                        return_to_main_menu = True
+        return 'Q'
+
+    run_program = True
+    user_time = datetime.timedelta(hours=0)
+
+    while run_program:
+        print_menu_options()
         print()
-        # for package_item in myHash.table:
-        #     print(package_item)
-        for i in range(len(myHash.table)):
-            print('ID: {}; Package Info: {}'.format(i+1, myHash.search(i+1)))
         print()
-        print('----------------------------------------------------------')
-        print()
-        wgups_package_tracker()
-    else:
-        print()
-        print('Sorry! I don\'t recognize that selection')
-        print(' ¯\_(ツ)_/¯ ')
-        print()
-        print('Please try again')
-        print()
-        print()
-        wgups_package_tracker()
+        user_input = input('Please choose option 1, 2, 3, or 4: ')
+
+        if user_input == '1':
+            print()
+            user_time = get_user_time()
+            # print('\n' * 23)
+            if user_time != 'Q':
+                print(f'Print all package status and total mileage as of {user_time}')
+                print(myHash.search(1))
+                print()
+                print('----------------------------------------------------------')
+            else:
+                run_program = False
+
+        # if user_input == '2':
+        #     print()
+        #     # print('\n' * 23)
+        #     print('Print single package status and time')
+        #     print()
+        #     print('----------------------------------------------------------')
+        #     # print('\n' * 10)
+        #
+        #     wgups_package_tracker()
+        #
+        # if user_input == '3':  # fix me
+        #     print()
+        #     # print('\n' * 23)
+        #     for i in range(len(myHash.table)):
+        #         print('ID: {}; Package Info: {}'.format(i + 1, myHash.search(i + 1)))
+        #     print()
+        #     print('----------------------------------------------------------')
+        #     print()
+        #     wgups_package_tracker()
+
+        elif user_input == '4':
+            print()
+            print('Thank you for choosing WGUPS!')
+            print('Have a great day')
+            print('Program terminated')
+            return
+
+        else:
+            print()
+            # print('\n' * 23)
+            print('Sorry! I don\'t recognize that selection')
+            print(' ¯\_(ツ)_/¯ ')
+            print()
+            print('Please try again')
+            print()
+            print()
+            # run_program = False
+
+    # print('Return to main menu???')
+    wgups_package_tracker()
 
 
 
 
 
-myHash = ChainingHashTable(40)
+
+
+# increase size of hash table by updating number_of_packages
+number_of_packages = 40
+
+# self adjusting data structure
+myHash = ChainingHashTable(number_of_packages)
+
+distanceData = []
+addressData = []
+
+# create 3 truck objects
+truck_1 = Truck(1)
+truck_1.time_of_departure = datetime.timedelta(hours=8)
+
+truck_2 = Truck(2)
+truck_2.time_of_departure = datetime.timedelta(hours=8)
+
+truck_3 = Truck(3)
+truck_3.time_of_departure = truck_1.time_of_return
+
 
 # Load package data from CSV
 input_package_data('WGUPS_Package_File.csv')
@@ -363,5 +437,7 @@ deliver_packages(truck_3)
 # print(f'Truck 3 - Total miles: {truck_3.daily_miles_traveled}')
 # print(f'Total miles traveled: '
 #       f'{truck_1.daily_miles_traveled + truck_2.daily_miles_traveled + truck_3.daily_miles_traveled}')
+
+# create_and_insert_new_package(1, '1234 Penny Lane', 'Gotham City', 'DC', 11111, 'EOD', 2, '', )
 
 wgups_package_tracker()

@@ -8,7 +8,8 @@ class ChainingHashTable:
         for i in range(initial_capacity):
             self.table.append([])
 
-    def insert(self, key, package):  # does insert and update
+    # function to append to list if key does not exist, replaces value if key does exist
+    def insert(self, key, package):
         # use  built-in hash() to define correct bucket and create bucket_list where this item will go.
         bucket = hash(key) % len(self.table)
         bucket_list = self.table[bucket]
@@ -25,6 +26,7 @@ class ChainingHashTable:
         bucket_list.append(key_value)
         return True
 
+    # function searches for item in hash table with key as arg
     def search(self, key):
         # get the bucket list where key is located.
         bucket = hash(key) % len(self.table)
@@ -40,6 +42,7 @@ class ChainingHashTable:
                 return key_value[1]  # value
         return None
 
+    # function removes item from hash table with key as arg
     def remove(self, key):
         # get the bucket list where this item will be removed from.
         bucket = hash(key) % len(self.table)
@@ -50,3 +53,4 @@ class ChainingHashTable:
             if kv[0] == key:
                 bucket_list.remove([kv[0], kv[1]])
                 # print('Package removed from queue')  # verify remove method
+

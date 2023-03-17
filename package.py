@@ -17,6 +17,7 @@ class Package:
         self.time_left_hub = datetime.timedelta(hours=0)  # do not update
         self.time_delivered = datetime.timedelta(hours=0)
         self.package_status = package_status
+        self.on_truck = ''
 
     def __str__(self):  # overwrite print() to print as string, not reference
         return f'{self.package_id}, {self.destination_address}, {self.city}, {self.state}, {self.zip},' \

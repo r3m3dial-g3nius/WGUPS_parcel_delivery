@@ -4,7 +4,6 @@
 
 import csv
 import datetime
-import math
 from chaininghashtable import ChainingHashTable
 from package import Package
 from truck import Truck
@@ -118,6 +117,7 @@ def load_trucks():  # manually + status update + timestamp for departure
 
     for package_item in truck_1.packages_onboard:
         package_item.package_status = 'ON TRUCK 1'
+        package_item.on_truck = f'Truck {truck_1.truck_id}'
         package_item.time_left_hub = truck_1.time_of_departure
 
     # print(f'Number of items on truck_1: {truck_1.num_items_on_truck}')
@@ -158,6 +158,7 @@ def load_trucks():  # manually + status update + timestamp for departure
 
     for package_item in truck_2.packages_onboard:
         package_item.package_status = 'ON TRUCK 2'
+        package_item.on_truck = f'Truck {truck_2.truck_id}'
         package_item.time_left_hub = truck_2.time_of_departure
     # print(f'Number of items on truck_2: {truck_2.num_items_on_truck}')
 
@@ -194,8 +195,9 @@ def load_trucks():  # manually + status update + timestamp for departure
     truck_3.num_items_on_truck += 1
 
     for package_item in truck_3.packages_onboard:
+        package_item.on_truck = f'Truck {truck_3.truck_id}'
         package_item.package_status = 'ON TRUCK 3'
-        package_item.time_left_hub = truck_3.time_of_departure
+        package_item.time_left_hub = truck_1.time_of_departure
     # print(f'Number of items on truck_3: {truck_3.num_items_on_truck}')
     #
     # print(
@@ -221,7 +223,7 @@ def deliver_packages(truck):
                 truck.current_time += datetime.timedelta(hours=(shortest / truck.truck_avg_speed))  # why error?
                 truck.daily_miles_traveled += shortest
                 package_item.time_delivered = truck.current_time
-                package_item.package_status = 'DELIVERED'
+                package_item.package_status = f'DELIVERED at {package_item.time_delivered} by Truck {truck.truck_id}'
                 this_stop = package_item.destination_address
                 truck.packages_delivered.append(package_item)
                 truck.packages_onboard.remove(package_item)
@@ -235,7 +237,8 @@ def deliver_packages(truck):
             for remaining_package in truck.packages_onboard:
                 if remaining_package.destination_address == current_loc:
                     remaining_package.time_delivered = truck.current_time
-                    remaining_package.package_status = 'DELIVERED'
+                    remaining_package.package_status = f'DELIVERED at {package_item.time_delivered} by ' \
+                                                       f'Truck {truck.truck_id}'
                     truck.packages_delivered.append(remaining_package)
                     truck.packages_onboard.remove(remaining_package)
                     truck.num_items_on_truck -= 1
@@ -257,10 +260,14 @@ def deliver_packages(truck):
 
     # check data w timestamp/mileage
     # print()
+    # print(f'Truck {truck.truck_id} started route at {truck.time_of_departure}')
     # print(f'Truck {truck.truck_id} returned to hub at {truck.time_of_return}')
     # print(f'   Number of packages onboard truck: {len(truck.packages_onboard)}')
     # print(f'   Number of packages delivered: {len(truck.packages_delivered)}')
     # print(f'   Miles traveled: {truck.daily_miles_traveled}')
+    # print()
+    # print()
+    # print()
 
 
 # Function for User Interface
@@ -271,7 +278,7 @@ def wgups_package_tracker():
         print('----------------------------------------------------------')
         print('   1. Print All Packages and Status')
         print('   2. Print Single Package Status and Time')
-        print('   3. Print All Package Status and Total Mileage')
+        print('   3. End of Day Report - Print All Package Status and Total Mileage')
         print('   4. Exit')
         print('----------------------------------------------------------')
         print()
@@ -303,6 +310,10 @@ def wgups_package_tracker():
                     if (0 <= h < 24) and (0 <= m < 60):
                         # print(h, m) # check values
                         new_time = datetime.timedelta(hours=h, minutes=m)
+                        # if new_time < datetime.timedelta(hours=10, minutes=20):
+                        #     old_package_9 = Package(9, '300 State St', 'Salt Lake City', 'UT', '84103', 'EOD', 2,
+                        #                             'wrong address', 'AT HUB')
+                        #     myHash.insert(9, old_package_9)
                         return new_time
                     else:
                         print('Please try again:')
@@ -320,10 +331,19 @@ def wgups_package_tracker():
         print()
         user_input = input('Please choose option 1, 2, 3, or 4: ')
 
+    # Main Menu option #1
         if user_input == '1':  # Print all packages and status w time delivered if appropriate
             print()
             user_time = get_user_time()
+
             if user_time != 'Q':
+
+                # simulate correction of wrong address on package 9
+                if user_time >= datetime.timedelta(hours=10, minutes=20):
+                    package_9 = myHash.search(9)
+                    package_9.destination_address = '410 S State St'
+                    package_9.zip = '84111'
+
                 print(f'Print all packages and status as of {user_time}')
                 print()
 
@@ -332,21 +352,36 @@ def wgups_package_tracker():
                     if user_time < start_time:
                         print(f'ID #{package_to_check.package_id} Destination: {package_to_check.destination_address}, '
                               f'{package_to_check.city}, {package_to_check.state}  {package_to_check.zip}, Weight: '
-                              f'{package_to_check.mass}, Status: AT HUB')
-                    elif package_to_check.time_delivered > user_time >= start_time:
+                              f'{package_to_check.mass}, \n    Special Instructions: * {package_to_check.special_inst},'
+                              f' \n    Deliver by: {package_to_check.deliver_by}, Status: PROCESSING')
+                        print()
+                    elif package_to_check.time_left_hub > user_time >= start_time:
                         print(f'ID #{package_to_check.package_id} Destination: {package_to_check.destination_address}, '
                               f'{package_to_check.city}, {package_to_check.state}  {package_to_check.zip}, Weight: '
-                              f'{package_to_check.mass}, Status: EN ROUTE')
+                              f'{package_to_check.mass}, \n    Special Instructions: * {package_to_check.special_inst},'
+                              f' \n    Deliver by: {package_to_check.deliver_by}, Status: IN SORT')
+                        print()
+                    elif package_to_check.time_delivered > user_time >= start_time:
+                        print(f'ID #{package_to_check.package_id} Destination: {package_to_check.destination_address},'
+                              f' {package_to_check.city}, {package_to_check.state}  {package_to_check.zip}, Weight: '
+                              f'{package_to_check.mass}, \n    Special Instructions: * {package_to_check.special_inst},'
+                              f' \n    Deliver by: {package_to_check.deliver_by}, Status: EN ROUTE via '
+                              f'{package_to_check.on_truck}')
+                        print()
                     elif package_to_check.time_delivered < user_time > start_time:
                         print(f'ID #{package_to_check.package_id} Destination: {package_to_check.destination_address}, '
                               f'{package_to_check.city}, {package_to_check.state}  {package_to_check.zip}, Weight: '
-                              f'{package_to_check.mass}, Status: DELIVERED at {package_to_check.time_delivered}')
+                              f'{package_to_check.mass}, \n    Special Instructions: * {package_to_check.special_inst},'
+                              f' \n    Deliver by: {package_to_check.deliver_by}, '
+                              f'Status: DELIVERED at {package_to_check.time_delivered} by {package_to_check.on_truck}')
+                        print()
                 print()
                 print('----------------------------------------------------------')
 
             else:
                 run_program = False
 
+    # Main Menu option #2
         elif user_input == '2':
             print()
             user_package = None
@@ -354,11 +389,18 @@ def wgups_package_tracker():
             user_time = get_user_time()
 
             if user_time != 'Q':
+
+                # simulate correction of wrong address on package 9
+                if user_time >= datetime.timedelta(hours=10, minutes=20):
+                    package_9 = myHash.search(9)
+                    package_9.destination_address = '410 S State St'
+                    package_9.zip = '84111'
+
                 print()
                 print('Enter 1 to search by ID or 2 to search by delivery address...')
                 submenu_option = input('Or enter any other key to return to Main Menu - ')
 
-                if submenu_option == '1':
+                if submenu_option == '1':   # search by key
                     user_choice = input('Please enter package ID - ')
                     user_package = myHash.search(int(user_choice))
 
@@ -368,27 +410,49 @@ def wgups_package_tracker():
                         run_program = False
 
                     else:
+                        print()
                         print(f'Package status as of {user_time}')  # ******************
+                        print()
 
                         if user_time < start_time:
                             print(f'ID #{user_package.package_id} Destination: {user_package.destination_address}, '
                                   f'{user_package.city}, {user_package.state}  {user_package.zip}, Weight: '
-                                  f'{user_package.mass}, Status: AT HUB')
+                                  f'{user_package.mass}, \n    Special Instructions: * {user_package.special_inst}, '
+                                  f'\n    Deliver by: {user_package.deliver_by}, Status: PROCESSING')
+                            print()
+
+                        elif user_package.time_left_hub > user_time >= start_time:
+                            print(f'ID #{user_package.package_id} Destination: {user_package.destination_address}, '
+                                  f'{user_package.city}, {user_package.state}  {user_package.zip}, Weight: '
+                                  f'{user_package.mass}, \n    Special Instructions: * {user_package.special_inst}, '
+                                  f'\n    Deliver by: {user_package.deliver_by}, Status: IN SORT')
+                            print()
+
                         elif user_package.time_delivered > user_time > start_time:
                             print(f'ID #{user_package.package_id} Destination: {user_package.destination_address}, '
                                   f'{user_package.city}, {user_package.state}  {user_package.zip}, Weight: '
-                                  f'{user_package.mass}, Status: EN ROUTE')
+                                  f'{user_package.mass}, \n    Special Instructions: * {user_package.special_inst}, '
+                                  f'\n    Deliver by: {user_package.deliver_by}, Status: '
+                                  f'EN ROUTE via {user_package.on_truck}')
+                            print()
+                            
                         elif user_package.time_delivered < user_time > start_time:
                             print(f'ID #{user_package.package_id} Destination: {user_package.destination_address}, '
                                   f'{user_package.city}, {user_package.state}  {user_package.zip}, Weight: '
-                                  f'{user_package.mass}, Status: DELIVERED at {user_package.time_delivered}')
+                                  f'{user_package.mass}, \n    Special Instructions: * {user_package.special_inst}, '
+                                  f'\n    Deliver by: {user_package.deliver_by}, Status: DELIVERED at '
+                                  f'{user_package.time_delivered} by Truck {user_package.on_truck}')
+                        print()
+                        print()
+                        print()
                         print()
                         print('----------------------------------------------------------')
 
                     # else:
                     #     run_program = False
 
-                elif submenu_option == '2':
+                elif submenu_option == '2': # search by address (partial string)
+                    print()
                     address_input = input('Please enter delivery address...partial address is acceptable - ')
                     for i in range(len(myHash.table)):
                         package_to_check = myHash.search(i + 1)
@@ -405,15 +469,35 @@ def wgups_package_tracker():
                             if user_time < start_time:
                                 print(f'ID #{package.package_id} Destination: {package.destination_address}, '
                                       f'{package.city}, {package.state}  {package.zip}, Weight: '
-                                      f'{package.mass}, Status: AT HUB')
+                                      f'{package.mass}, \n    Special Instructions: * {package.special_inst}, '
+                                      f'\n    Deliver by: {package.deliver_by}, Status: PROCESSING')
+                                print()
+
+                            elif package.time_left_hub > user_time >= start_time:
+                                print(f'ID #{package.package_id} Destination: {package.destination_address}, '
+                                      f'{package.city}, {package.state}  {package.zip}, Weight: '
+                                      f'{package.mass}, \n    Special Instructions: * {package.special_inst}, '
+                                      f'\n    Deliver by: {package.deliver_by}, Status: IN SORT')
+                                print()
+                                
                             elif package.time_delivered > user_time > start_time:
                                 print(f'ID #{package.package_id} Destination: {package.destination_address}, '
                                       f'{package.city}, {package.state}  {package.zip}, Weight: '
-                                      f'{package.mass}, Status: EN ROUTE')
+                                      f'{package.mass}, \n    Special Instructions: * {package.special_inst}, '
+                                      f'\n    Deliver by: {package.deliver_by}, Status: EN ROUTE via '
+                                      f'{package.on_truck}')
+                                print()
+
                             elif package.time_delivered < user_time > start_time:
                                 print(f'ID #{package.package_id} Destination: {package.destination_address}, '
                                       f'{package.city}, {package.state}  {package.zip}, Weight: '
-                                      f'{package.mass}, Status: DELIVERED at {package.time_delivered}')
+                                      f'{package.mass}, \n    Special Instructions: * {package.special_inst}, '
+                                      f'\n    Deliver by: {package.deliver_by}, Status: DELIVERED at '
+                                      f'{package.time_delivered} by {package.on_truck}')
+                                print()
+                            print()
+                            print()
+                            print()
                             print()
                             print('----------------------------------------------------------')
                     else:
@@ -446,7 +530,8 @@ def wgups_package_tracker():
             else:
                 run_program = False
 
-        elif user_input == '3':  # fix me
+    # Main Menu option #3
+        elif user_input == '3':  # End of Day Report - Print All Package Status and Total Mileage
             print()
             # print('\n' * 23)
             for i in range(len(myHash.table)):
@@ -454,18 +539,52 @@ def wgups_package_tracker():
                 print(f'ID #{package_to_check.package_id} Destination: {package_to_check.destination_address}, '
                       f'{package_to_check.city}, {package_to_check.state}  {package_to_check.zip}, Weight: '
                       f'{package_to_check.mass}, Time left HUB: {package_to_check.time_left_hub}, '
-                      f'Status: {package_to_check.package_status} at {package_to_check.time_delivered}')
+                      f'\n    Special Instructions: * {package_to_check.special_inst}, \n    Deliver by: {package_to_check.deliver_by}'
+                      f', Status: {package_to_check.package_status}')
+                print()
                 # print('ID: {}'.format(myHash.search(i + 1)))
             print()
             print('----------------------------------------------------------')
             print()
-            print(f'Truck 1 - Total miles: {truck_1.daily_miles_traveled}')
-            print(f'Truck 2 - Total miles: {truck_2.daily_miles_traveled}')
-            print(f'Truck 3 - Total miles: {truck_3.daily_miles_traveled}')
+            print(f'Truck 1 - Time of Departure: {truck_1.time_of_departure}, Time returned to HUB: '
+                  f'{truck_1.time_of_return}, Total miles: {truck_1.daily_miles_traveled}')
+            print(f'   Total packages delivered: {len(truck_1.packages_delivered)}')
+            print(f'   Package IDs delivered by Truck 1: ', end='')
+            for package in truck_1.packages_delivered:
+                if package == truck_1.packages_delivered[-1]:
+                    print(package.package_id)
+                else:
+                    print(package.package_id, end=', ')
+            print()
+
+            print(f'Truck 2 - Time of Departure: {truck_2.time_of_departure}, Time returned to HUB: '
+                  f'{truck_2.time_of_return}, Total miles: {truck_2.daily_miles_traveled}')
+            print(f'   Total packages delivered: {len(truck_2.packages_delivered)}')
+            print(f'   Package IDs delivered by Truck 2: ', end='')
+            for package in truck_2.packages_delivered:
+                if package == truck_2.packages_delivered[-1]:
+                    print(package.package_id)
+                else:
+                    print(package.package_id, end=', ')
+            print()
+
+            print(f'Truck 3 - Time of Departure: {truck_3.time_of_departure}, Time returned to HUB: '
+                  f'{truck_3.time_of_return}, Total miles: {truck_3.daily_miles_traveled}')
+            print(f'   Total packages delivered: {len(truck_3.packages_delivered)}')
+            print(f'   Package IDs delivered by Truck 3: ', end='')
+            for package in truck_3.packages_delivered:
+                if package == truck_3.packages_delivered[-1]:
+                    print(package.package_id)
+                else:
+                    print(package.package_id, end=', ')
+            print()
+
+            print()
             print(f'Total miles traveled: '
                   f'{truck_1.daily_miles_traveled + truck_2.daily_miles_traveled + truck_3.daily_miles_traveled}')
             print('\n' * 5)
 
+    # Main Menu option #4
         elif user_input == '4':
             print()
             print('Thank you for choosing WGUPS!')
@@ -473,10 +592,12 @@ def wgups_package_tracker():
             print('Program terminated')
             return
 
+    # Invalid option by user
         else:
             print()
             # print('\n' * 23)
             print('Sorry! I don\'t recognize that selection')
+            print()
             print(' ¯\_(ツ)_/¯ ')
             print()
             print('Please try again')

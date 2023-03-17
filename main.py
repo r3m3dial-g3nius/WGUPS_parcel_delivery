@@ -9,12 +9,58 @@ from package import Package
 from truck import Truck
 
 
-# manually create package then insert to hash table
-def create_and_insert_new_package(package_id, destination_address, city, state, zip_code, deliver_by, mass,
-                                  instructions, package_status='AT HUB'):
-    new_package = Package(package_id, destination_address, city, state, zip_code, deliver_by, mass, instructions,
-                          package_status)
-    myHash.insert(new_package.package_id, new_package)
+# future upgrade - manually create package then insert to hash table
+def create_and_insert_new_package():
+    create_new_package = True
+
+    while create_new_package:
+        package_id = input('Please enter new package ID or Q to quit: ')
+        if package_id.isalpha():
+            if package_id == 'Q' or package_id == 'q':
+                print('Cancelling new package.\n')
+                return
+            else:
+                print('Invalid Entry. Please try again.')
+        if package_id.isdigit():
+            package_id = int(package_id)
+            if package_id <= number_of_packages:
+                overwrite_prompt = input('Package ID already exists. Overwrite? Y or N ')
+                if overwrite_prompt == 'Y' or overwrite_prompt == 'y':
+                    destination_address = input('    Enter street number and name: ')
+                    city = input('    Enter city: ')
+                    state = input('    Enter state: ')
+                    zip_code = input('    Enter zip code: ')
+                    deliver_by = input('    Enter EOD (End of Day) for standard delivery or early delivery time '
+                                       '(HH:MM): ')
+                    mass = input('    Enter weight: ')
+                    instructions = input('    Enter any special instructions: ')
+                    package_status = 'AT HUB'
+                    new_package = Package(package_id, destination_address, city, state, zip_code, deliver_by, mass,
+                                          instructions, package_status)
+                    myHash.insert(new_package.package_id, new_package)
+                    print(f'\nNew package created successfully!\n')
+                    create_new_package = False
+                elif overwrite_prompt == 'N' or overwrite_prompt == 'n':
+                    print('\nCancelling new package.\n')
+                    # return
+                else:
+                    print('Invalid entry. Please try again.')
+
+            else:
+                destination_address = input('    Enter street number and name: ')
+                city = input('    Enter city: ')
+                state = input('    Enter state: ')
+                zip_code = input('    Enter zip code: ')
+                deliver_by = input('    Enter EOD (End of Day) for standard delivery or early delivery time between'
+                                   ' 09:00 and 12:00 (HH:MM): ')
+                mass = input('    Enter weight: ')
+                instructions = input('    Enter any special instructions: ')
+                package_status = 'AT HUB'
+                new_package = Package(package_id, destination_address, city, state, zip_code, deliver_by, mass, instructions,
+                                      package_status)
+                myHash.insert(new_package.package_id, new_package)
+                print(f'\nNew package created successfully!\n')
+                create_new_package = False
 
 
 # input package data into hash table
@@ -324,6 +370,7 @@ def wgups_package_tracker():
     run_program = True
     # user_time = datetime.timedelta(hours=0)
     start_time = datetime.timedelta(hours=8)
+    print('\n' * 5)
 
     while run_program:
         print_menu_options()
@@ -460,7 +507,7 @@ def wgups_package_tracker():
                     # else:
                     #     run_program = False
 
-                elif submenu_option == '2': # search by address (partial string)
+                elif submenu_option == '2':  # search by address (partial string)
                     print()
                     address_input = input('Please enter delivery address...partial address is acceptable - ')
                     for i in range(len(myHash.table)):
@@ -519,23 +566,6 @@ def wgups_package_tracker():
                     print('\n' * 5)
                     run_program = False
 
-                # if user_package is not None:
-                #     print(f'Package status as of {user_time}')
-                #
-                #     if user_time < start_time:
-                #         print(f'ID #{user_package.package_id} Destination: {user_package.destination_address} '
-                #               f'Status: AT HUB')
-                #     elif user_package.time_delivered > user_time > start_time:
-                #         print(f'ID #{user_package.package_id} Destination: {user_package.destination_address} '
-                #               f'Status: EN ROUTE')
-                #     elif user_package.time_delivered < user_time > start_time:
-                #         print(f'ID #{user_package.package_id} Destination: {user_package.destination_address} '
-                #               f'Status: DELIVERED at {user_package.time_delivered}')
-                #     print()
-                #     print('----------------------------------------------------------')
-                #
-                # else:
-                #     run_program = False
             else:
                 run_program = False
 
@@ -613,7 +643,7 @@ def wgups_package_tracker():
             print()
             print()
 
-    # print('Return to main menu???')
+    # restart program loop - option 4 exits UI
     wgups_package_tracker()
 
 
@@ -626,14 +656,14 @@ myHash = ChainingHashTable(number_of_packages)
 distanceData = []
 addressData = []
 
-# create 3 truck objects
-truck_1 = Truck(1)
+# create 3 truck objects and set time of departure
+truck_1 = Truck(1)  # returns to HUB after early deliveries, completes truck 3 route
 truck_1.time_of_departure = datetime.timedelta(hours=8)
 
 truck_2 = Truck(2)
 truck_2.time_of_departure = datetime.timedelta(hours=8)
 
-truck_3 = Truck(3)
+truck_3 = Truck(3)  # departs hub later to accommodate late arrivals
 truck_3.time_of_departure = truck_1.time_of_return
 
 # Load package data from CSV
@@ -654,9 +684,8 @@ input_package_data('WGUPS_Package_File.csv')
 
 # Load distance data from CSV
 input_distance_data('WGUPS_Distance_Table.csv')
-# ***   test distanceData list   ***
-# print(distanceData)
 
+# Load address data from CSV
 input_address_data('WGUPS_Distance_Table.csv')
 
 # load trucks
@@ -667,15 +696,4 @@ deliver_packages(truck_1)
 deliver_packages(truck_2)
 deliver_packages(truck_3)
 
-# check mileage
-# print(f'Truck 1 - Total miles: {truck_1.daily_miles_traveled}')
-# print(f'Truck 2 - Total miles: {truck_2.daily_miles_traveled}')
-# print(f'Truck 3 - Total miles: {truck_3.daily_miles_traveled}')
-# print(f'Total miles traveled: '
-#       f'{truck_1.daily_miles_traveled + truck_2.daily_miles_traveled + truck_3.daily_miles_traveled}')
-
-# create_and_insert_new_package(1, '1234 Penny Lane', 'Gotham City', 'DC', 11111, 'EOD', 2, '', )
-
 wgups_package_tracker()
-
-

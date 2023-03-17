@@ -56,8 +56,8 @@ def create_and_insert_new_package():
                 mass = input('    Enter weight: ')
                 instructions = input('    Enter any special instructions: ')
                 package_status = 'AT HUB'
-                new_package = Package(package_id, destination_address, city, state, zip_code, deliver_by, mass, instructions,
-                                      package_status)
+                new_package = Package(package_id, destination_address, city, state, zip_code, deliver_by, mass,
+                                      instructions, package_status)
                 myHash.insert(new_package.package_id, new_package)
                 print(f'\nNew package created successfully!\n')
                 create_new_package = False
@@ -436,7 +436,7 @@ def wgups_package_tracker():
     # Main Menu option #2
         elif user_input == '2':
             print()
-            user_package = None
+            # user_package = None
             user_packages = []
             user_time = get_user_time()
 
@@ -668,19 +668,6 @@ truck_3.time_of_departure = truck_1.time_of_return
 
 # Load package data from CSV
 input_package_data('WGUPS_Package_File.csv')
-
-# ***   test print hash table   ***
-# for i in range(len(myHash.table)):
-#     print('ID: {}; Package Info: {}'.format(i+1, myHash.search(i+1)))
-# print(myHash.search(5))
-
-# ***   test insert/remove to hash table   ***
-# test_package = Package(50, '123 Penny Lane', 'Hollywood', 'CA', 90210, 'EOD', 15, 'signed delivery')
-# myHash.insert(50, test_package)
-# print(myHash.search(50))
-#
-# myHash.remove(50)
-# print(myHash.search(50))
 
 # Load distance data from CSV
 input_distance_data('WGUPS_Distance_Table.csv')

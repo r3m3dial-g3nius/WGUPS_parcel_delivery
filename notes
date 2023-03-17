@@ -2,6 +2,20 @@
 # h, m, s = truck.current_time.split(":")
 # timeobj = datetime.timedelta(hours=int(h), minutes=int(m), seconds=int(s))
 
+# ***   test print hash table   ***
+# for i in range(len(myHash.table)):
+#     print('ID: {}; Package Info: {}'.format(i+1, myHash.search(i+1)))
+# print(myHash.search(5))
+
+# ***   test insert/remove to hash table   ***
+# test_package = Package(50, '123 Penny Lane', 'Hollywood', 'CA', 90210, 'EOD', 15, 'signed delivery')
+# myHash.insert(50, test_package)
+# print(myHash.search(50))
+#
+# myHash.remove(50)
+# print(myHash.search(50))
+
+
 
     # for packages not specified early delivery but at same address
     #     for package_item in truck.packages_onboard:

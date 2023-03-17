@@ -10,6 +10,7 @@ from truck import Truck
 
 
 # future upgrade - manually create package then insert to hash table
+# Big O = O(1)
 def create_and_insert_new_package():
     create_new_package = True
 
@@ -64,6 +65,7 @@ def create_and_insert_new_package():
 
 
 # input package data into hash table
+# Big O = O(N)
 def input_package_data(file_name):
     with open(file_name) as all_packages:
         package_data = csv.reader(all_packages, delimiter=',')
@@ -90,6 +92,7 @@ def input_package_data(file_name):
 
 
 # begin distance data input to distanceData list
+# Big O = O(N)
 def input_distance_data(file_name):
     with open(file_name) as all_data_dist:
         distance_data = csv.reader(all_data_dist, delimiter=',')
@@ -100,6 +103,7 @@ def input_distance_data(file_name):
 
 
 # begin address data input to addressData list
+# Big O = O(N)
 def input_address_data(file_name):
     with open(file_name) as all_address_data:
         address_data = csv.reader(all_address_data, delimiter=',')
@@ -110,6 +114,7 @@ def input_address_data(file_name):
 
 
 # begin function to find distance between 2 addresses, returns distance as float
+# Big O = O(1)
 def distance_between(address1, address2):
     if addressData.index(address1) >= addressData.index(address2):
         distance = distanceData[addressData.index(address1)][addressData.index(address2)]
@@ -119,6 +124,7 @@ def distance_between(address1, address2):
 
 
 # Nearest Neighbor algorithm! This function to return distance from current location to next closest delivery address
+# Big O = O(N)
 def shortest_distance(from_address, onboard_packages):
     shortest_early = 9999
     shortest_eod = 9999
@@ -140,6 +146,7 @@ def shortest_distance(from_address, onboard_packages):
 
 
 # load trucks, set time of departure, updates package status
+# Big O = O(N)
 def load_trucks():  # manually + status update + timestamp for departure
     # load 1st truck   *** take small load of early packages w early return to hub to run truck3?
     truck_1.packages_onboard.append(myHash.search(39))
@@ -253,6 +260,7 @@ def load_trucks():  # manually + status update + timestamp for departure
 
 
 # deliver packages in specified truck, updates location, time, mileage, package status, truck status
+# Big O = O(N^2)
 def deliver_packages(truck):
     # print(f'Truck {truck.truck_id} time of departure: {truck.time_of_departure}')  # testing departure time
     current_loc = addressData[0]  # HUB
@@ -317,8 +325,10 @@ def deliver_packages(truck):
 
 
 # Function for User Interface
+# Big O = O(N^2)
 def wgups_package_tracker():
     # prints menu options
+    # Big O = O(1)
     def print_menu_options():
         print('***   WGUPS Menu Options   ***')
         print('----------------------------------------------------------')
@@ -330,6 +340,7 @@ def wgups_package_tracker():
         print()
 
     # set current time for query, returns user entry as timedelta
+    # Big O = O(1)
     def get_user_time():
         # user_time = datetime.timedelta(hours=0)
         return_to_main_menu = False
@@ -379,6 +390,7 @@ def wgups_package_tracker():
         user_input = input('Please choose option 1, 2, 3, or 4: ')
 
     # Main Menu option #1
+    # Big O = O(N)
         if user_input == '1':  # Print all packages and status w time delivered if appropriate
             print()
             user_time = get_user_time()
@@ -434,6 +446,7 @@ def wgups_package_tracker():
                 run_program = False
 
     # Main Menu option #2
+        # Big O = O(N^2)
         elif user_input == '2':
             print()
             # user_package = None
@@ -570,9 +583,9 @@ def wgups_package_tracker():
                 run_program = False
 
     # Main Menu option #3
+    # Big O = O(N)
         elif user_input == '3':  # End of Day Report - Print All Package Status and Total Mileage
             print()
-            # print('\n' * 23)
             for i in range(len(myHash.table)):
                 package_to_check = myHash.search(i + 1)
                 print(f'ID #{package_to_check.package_id} Destination: {package_to_check.destination_address}, '
@@ -624,6 +637,7 @@ def wgups_package_tracker():
             print('\n' * 5)
 
     # Main Menu option #4
+    # Big O = O(1)
         elif user_input == '4':
             print()
             print('Thank you for choosing WGUPS!')
@@ -632,6 +646,7 @@ def wgups_package_tracker():
             return
 
     # Invalid option by user
+    # Big O = O(1)
         else:
             print()
             # print('\n' * 23)

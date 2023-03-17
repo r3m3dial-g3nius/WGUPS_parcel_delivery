@@ -237,7 +237,7 @@ def deliver_packages(truck):
             for remaining_package in truck.packages_onboard:
                 if remaining_package.destination_address == current_loc:
                     remaining_package.time_delivered = truck.current_time
-                    remaining_package.package_status = f'DELIVERED at {package_item.time_delivered} by ' \
+                    remaining_package.package_status = f'DELIVERED at {remaining_package.time_delivered} by ' \
                                                        f'Truck {truck.truck_id}'
                     truck.packages_delivered.append(remaining_package)
                     truck.packages_onboard.remove(remaining_package)
@@ -258,7 +258,7 @@ def deliver_packages(truck):
         if truck.truck_id == 1:
             truck_3.time_of_departure = truck.time_of_return
 
-    # check data w timestamp/mileage
+    # # check data w timestamp/mileage
     # print()
     # print(f'Truck {truck.truck_id} started route at {truck.time_of_departure}')
     # print(f'Truck {truck.truck_id} returned to hub at {truck.time_of_return}')
@@ -411,7 +411,7 @@ def wgups_package_tracker():
 
                     else:
                         print()
-                        print(f'Package status as of {user_time}')  # ******************
+                        print(f'Package status as of {user_time}')
                         print()
 
                         if user_time < start_time:
@@ -539,8 +539,8 @@ def wgups_package_tracker():
                 print(f'ID #{package_to_check.package_id} Destination: {package_to_check.destination_address}, '
                       f'{package_to_check.city}, {package_to_check.state}  {package_to_check.zip}, Weight: '
                       f'{package_to_check.mass}, Time left HUB: {package_to_check.time_left_hub}, '
-                      f'\n    Special Instructions: * {package_to_check.special_inst}, \n    Deliver by: {package_to_check.deliver_by}'
-                      f', Status: {package_to_check.package_status}')
+                      f'\n    Special Instructions: * {package_to_check.special_inst}, \n    Deliver by: '
+                      f'{package_to_check.deliver_by}, Status: {package_to_check.package_status}')
                 print()
                 # print('ID: {}'.format(myHash.search(i + 1)))
             print()
@@ -668,3 +668,5 @@ deliver_packages(truck_3)
 # create_and_insert_new_package(1, '1234 Penny Lane', 'Gotham City', 'DC', 11111, 'EOD', 2, '', )
 
 wgups_package_tracker()
+
+

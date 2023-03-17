@@ -10,7 +10,7 @@ from truck import Truck
 
 
 # future upgrade - manually create package then insert to hash table
-# Big O = O(1)
+# Big O = O(N)
 def create_and_insert_new_package():
     create_new_package = True
 
@@ -260,9 +260,8 @@ def load_trucks():  # manually + status update + timestamp for departure
 
 
 # deliver packages in specified truck, updates location, time, mileage, package status, truck status
-# Big O = O(N^2)
+# Big O = O(N^3)
 def deliver_packages(truck):
-    # print(f'Truck {truck.truck_id} time of departure: {truck.time_of_departure}')  # testing departure time
     current_loc = addressData[0]  # HUB
     this_stop = addressData[0]
     truck.current_time = truck.time_of_departure
@@ -379,7 +378,6 @@ def wgups_package_tracker():
         return 'Q'
 
     run_program = True
-    # user_time = datetime.timedelta(hours=0)
     start_time = datetime.timedelta(hours=8)
     print('\n' * 5)
 
@@ -390,7 +388,6 @@ def wgups_package_tracker():
         user_input = input('Please choose option 1, 2, 3, or 4: ')
 
     # Main Menu option #1
-    # Big O = O(N)
         if user_input == '1':  # Print all packages and status w time delivered if appropriate
             print()
             user_time = get_user_time()
@@ -446,7 +443,6 @@ def wgups_package_tracker():
                 run_program = False
 
     # Main Menu option #2
-        # Big O = O(N^2)
         elif user_input == '2':
             print()
             # user_package = None
@@ -583,7 +579,6 @@ def wgups_package_tracker():
                 run_program = False
 
     # Main Menu option #3
-    # Big O = O(N)
         elif user_input == '3':  # End of Day Report - Print All Package Status and Total Mileage
             print()
             for i in range(len(myHash.table)):
@@ -637,7 +632,6 @@ def wgups_package_tracker():
             print('\n' * 5)
 
     # Main Menu option #4
-    # Big O = O(1)
         elif user_input == '4':
             print()
             print('Thank you for choosing WGUPS!')
@@ -646,7 +640,6 @@ def wgups_package_tracker():
             return
 
     # Invalid option by user
-    # Big O = O(1)
         else:
             print()
             # print('\n' * 23)

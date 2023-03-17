@@ -344,6 +344,11 @@ def wgups_package_tracker():
                     package_9.destination_address = '410 S State St'
                     package_9.zip = '84111'
 
+                else:
+                    package_9 = myHash.search(9)
+                    package_9.destination_address = '300 State St'
+                    package_9.zip = '84103'
+
                 print(f'Print all packages and status as of {user_time}')
                 print()
 
@@ -395,6 +400,10 @@ def wgups_package_tracker():
                     package_9 = myHash.search(9)
                     package_9.destination_address = '410 S State St'
                     package_9.zip = '84111'
+                else:
+                    package_9 = myHash.search(9)
+                    package_9.destination_address = '300 State St'
+                    package_9.zip = '84103'
 
                 print()
                 print('Enter 1 to search by ID or 2 to search by delivery address...')

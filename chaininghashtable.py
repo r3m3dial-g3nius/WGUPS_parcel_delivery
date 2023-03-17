@@ -1,7 +1,8 @@
 # HashTable class using chaining.
 class ChainingHashTable:
-    # Constructor with optional initial capacity parameter.
+    # Constructor with initial capacity parameter.
     # Assigns all buckets with an empty list.
+    # Big O = O(N)
     def __init__(self, initial_capacity):
         # initialize hash table with empty bucket list entries.
         self.table = []
@@ -9,6 +10,7 @@ class ChainingHashTable:
             self.table.append([])
 
     # function to append to list if key does not exist, replaces value if key does exist
+    # Big O = O(1)
     def insert(self, key, package):
         # use  built-in hash() to define correct bucket and create bucket_list where this item will go.
         bucket = hash(key) % len(self.table)
@@ -27,6 +29,7 @@ class ChainingHashTable:
         return True
 
     # function searches for item in hash table with key as arg
+    # Big O = O(N)
     def search(self, key):
         # get the bucket list where key is located.
         bucket = hash(key) % len(self.table)
@@ -43,6 +46,8 @@ class ChainingHashTable:
         return None
 
     # function removes item from hash table with key as arg
+    # Big O = O(N)
+
     def remove(self, key):
         # get the bucket list where this item will be removed from.
         bucket = hash(key) % len(self.table)

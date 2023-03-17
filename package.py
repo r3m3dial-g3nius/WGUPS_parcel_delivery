@@ -4,6 +4,9 @@ import datetime
 
 
 class Package:
+    # package constructor
+    # Big O = O(1)
+
     def __init__(self, package_id, destination_address, city, state, zip_code, deliver_by, mass, instructions,
                  package_status=''):
         self.package_id = int(package_id)
@@ -19,7 +22,10 @@ class Package:
         self.package_status = package_status
         self.on_truck = ''
 
-    def __str__(self):  # overwrite print() to print as string, not reference
+    # modifies print output as string, not reference
+    # Big O = O(1)
+
+    def __str__(self):
         return f'{self.package_id}, {self.destination_address}, {self.city}, {self.state}, {self.zip},' \
                f' {self.deliver_by}, {self.mass}, {self.special_inst}, {self.time_left_hub}, ' \
                f'{self.time_delivered}, {self.package_status}'

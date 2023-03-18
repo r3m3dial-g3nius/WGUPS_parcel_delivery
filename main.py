@@ -128,176 +128,129 @@ def distance_between(address1, address2):
 def shortest_distance(from_address, onboard_packages):
     shortest_early = 9999
     shortest_eod = 9999
+    next_early = None
+    next_eod = None
     for package_item in onboard_packages:
         if package_item.deliver_by == 'EOD':
             if distance_between(from_address, package_item.destination_address) < shortest_eod:
                 shortest_eod = distance_between(from_address, package_item.destination_address)
+                next_eod = package_item
+
         else:
             if distance_between(from_address, package_item.destination_address) < shortest_early:
                 shortest_early = distance_between(from_address, package_item.destination_address)
-    # if shortest_early < shortest_eod:
-    #     return shortest_early
-    # else:
-    #     return shortest_eod
-    if shortest_early != 9999:
-        return shortest_early
+                next_early = package_item
+
+    if shortest_early == 9999:
+        return next_eod
+    elif next_eod is not None and next_early.destination_address == next_eod.destination_address:
+        return next_eod
     else:
-        return shortest_eod
+        return next_early
 
 
-# load trucks, set time of departure, updates package status
+# auto load trucks, update status, time of departure
 # Big O = O(N)
-def load_trucks():  # manually + status update + timestamp for departure
-    # load 1st truck   *** take small load of early packages w early return to hub to run truck3?
-    truck_1.packages_onboard.append(myHash.search(39))
-    truck_1.num_items_on_truck += 1
-    truck_1.packages_onboard.append(myHash.search(13))  # Deliver by 10:30
-    truck_1.num_items_on_truck += 1
-    truck_1.packages_onboard.append(myHash.search(19))  # Deliver w 14, 16
-    truck_1.num_items_on_truck += 1
-    truck_1.packages_onboard.append(myHash.search(15))  # Deliver by 9:00
-    truck_1.num_items_on_truck += 1
-    truck_1.packages_onboard.append(myHash.search(14))  # Deliver by 10:30 w 15, 19
-    truck_1.num_items_on_truck += 1
-    truck_1.packages_onboard.append(myHash.search(34))  # Deliver by 10:30
-    truck_1.num_items_on_truck += 1
-    truck_1.packages_onboard.append(myHash.search(16))  # Deliver by 10:30 w 13, 15
-    truck_1.num_items_on_truck += 1
-    truck_1.packages_onboard.append(myHash.search(20))  # Deliver by 10:30 w 13, 15
-    truck_1.num_items_on_truck += 1
-    truck_1.packages_onboard.append(myHash.search(21))
-    truck_1.num_items_on_truck += 1
+def auto_load_trucks():
+    unsorted_packages = []
+    loaded_packages = []
+    current_location = addressData[0]
+    for i in range(len(myHash.table)):
+        unsorted_packages.append(myHash.search(i + 1))
+        # print(myHash.search(i + 1))
+    print()
 
-    for package_item in truck_1.packages_onboard:
-        package_item.package_status = 'ON TRUCK 1'
-        package_item.on_truck = f'Truck {truck_1.truck_id}'
-        package_item.time_left_hub = truck_1.time_of_departure
+    for package in unsorted_packages:
+        if 'ruck_1' in package.special_inst:
+            truck_1.packages_onboard.append(package)
+            package.on_truck = f'Truck {truck_1.truck_id}'
+            loaded_packages.append(package)
+        if 'ruck_2' in package.special_inst:
+            truck_2.packages_onboard.append(package)
+            package.on_truck = f'Truck {truck_2.truck_id}'
+            loaded_packages.append(package)
+        if 'ruck_3' in package.special_inst or 'ERROR' in package.special_inst:
+            truck_3.packages_onboard.append(package)
+            loaded_packages.append(package)
+            package.on_truck = f'Truck {truck_3.truck_id}'
+        # if 'ERROR' in package.special_inst:
+        #     truck_3.packages_onboard.append(package)
+        #     loaded_packages.append(package)
 
-    # print(f'Number of items on truck_1: {truck_1.num_items_on_truck}')
+    for package in loaded_packages:
+        if package in unsorted_packages:
+            unsorted_packages.remove(package)
 
-    # load 2nd truck
-    truck_2.packages_onboard.append(myHash.search(2))
-    truck_2.num_items_on_truck += 1
-    truck_2.packages_onboard.append(myHash.search(33))
-    truck_2.num_items_on_truck += 1
-    truck_2.packages_onboard.append(myHash.search(29))  # Deliver by 10:30
-    truck_2.num_items_on_truck += 1
-    truck_2.packages_onboard.append(myHash.search(7))
-    truck_2.num_items_on_truck += 1
-    truck_2.packages_onboard.append(myHash.search(27))
-    truck_2.num_items_on_truck += 1
-    truck_2.packages_onboard.append(myHash.search(35))
-    truck_2.num_items_on_truck += 1
-    truck_2.packages_onboard.append(myHash.search(36))  # must be on truck_2
-    truck_2.num_items_on_truck += 1
-    truck_2.packages_onboard.append(myHash.search(3))
-    truck_2.num_items_on_truck += 1
-    truck_2.packages_onboard.append(myHash.search(18))  # must be on truck_2
-    truck_2.num_items_on_truck += 1
-    truck_2.packages_onboard.append(myHash.search(40))  # Deliver by 10:30
-    truck_2.num_items_on_truck += 1
-    truck_2.packages_onboard.append(myHash.search(4))
-    truck_2.num_items_on_truck += 1
-    truck_2.packages_onboard.append(myHash.search(37))  # Deliver by 10:30
-    truck_2.num_items_on_truck += 1
-    truck_2.packages_onboard.append(myHash.search(38))  # must be on truck_2
-    truck_2.num_items_on_truck += 1
-    truck_2.packages_onboard.append(myHash.search(5))
-    truck_2.num_items_on_truck += 1
-    truck_2.packages_onboard.append(myHash.search(30))  # Deliver by 10:30
-    truck_2.num_items_on_truck += 1
-    truck_2.packages_onboard.append(myHash.search(8))
-    truck_2.num_items_on_truck += 1
-
-    for package_item in truck_2.packages_onboard:
-        package_item.package_status = 'ON TRUCK 2'
-        package_item.on_truck = f'Truck {truck_2.truck_id}'
-        package_item.time_left_hub = truck_2.time_of_departure
-    # print(f'Number of items on truck_2: {truck_2.num_items_on_truck}')
-
-    # load 3rd truck    late arrivals
-    truck_3.packages_onboard.append(myHash.search(10))
-    truck_3.num_items_on_truck += 1
-    truck_3.packages_onboard.append(myHash.search(17))
-    truck_3.num_items_on_truck += 1
-    truck_3.packages_onboard.append(myHash.search(1))  # Deliver by 10:30
-    truck_3.num_items_on_truck += 1
-    truck_3.packages_onboard.append(myHash.search(31))  # Deliver by 10:30
-    truck_3.num_items_on_truck += 1
-    truck_3.packages_onboard.append(myHash.search(23))
-    truck_3.num_items_on_truck += 1
-    truck_3.packages_onboard.append(myHash.search(22))
-    truck_3.num_items_on_truck += 1
-    truck_3.packages_onboard.append(myHash.search(24))
-    truck_3.num_items_on_truck += 1
-    truck_3.packages_onboard.append(myHash.search(12))
-    truck_3.num_items_on_truck += 1
-    truck_3.packages_onboard.append(myHash.search(11))
-    truck_3.num_items_on_truck += 1
-    truck_3.packages_onboard.append(myHash.search(26))
-    truck_3.num_items_on_truck += 1
-    truck_3.packages_onboard.append(myHash.search(28))  # arrives at HUB 9:05
-    truck_3.num_items_on_truck += 1
-    truck_3.packages_onboard.append(myHash.search(32))  # arrives at HUB 9:05
-    truck_3.num_items_on_truck += 1
-    truck_3.packages_onboard.append(myHash.search(25))  # ** Deliver by 10:30  +++  arrives at HUB 9:05
-    truck_3.num_items_on_truck += 1
-    truck_3.packages_onboard.append(myHash.search(6))  # Deliver by 10:30
-    truck_3.num_items_on_truck += 1
-    truck_3.packages_onboard.append(myHash.search(9))  # wrong address, will be corrected at 10:20
-    truck_3.num_items_on_truck += 1
-
-    for package_item in truck_3.packages_onboard:
-        package_item.on_truck = f'Truck {truck_3.truck_id}'
-        package_item.package_status = 'ON TRUCK 3'
-        package_item.time_left_hub = truck_1.time_of_departure
-    # print(f'Number of items on truck_3: {truck_3.num_items_on_truck}')
+    # check print(f'\n Unsorted packages: {len(unsorted_packages)}')
+    # print(f'\n Truck 1 packages: {len(truck_1.packages_onboard)}')
+    # for package in truck_1.packages_onboard:
+    #     print(package.package_id)
+    # print()
     #
-    # print(
-    #     f'Total number of items on trucks: '
-    #     f'{truck_1.num_items_on_truck + truck_2.num_items_on_truck + truck_3.num_items_on_truck}')
+    # print(f'\n Truck 2 packages: {len(truck_2.packages_onboard)}')
+    # for package in truck_2.packages_onboard:
+    #     print(package.package_id)
+    # print()
+    #
+    # print(f'\n Truck 3 packages: {len(truck_3.packages_onboard)}')
+    # for package in truck_3.packages_onboard:
+    #     print(package.package_id)
+    # print()
+
+    for truck in truck_data:
+        while len(truck.packages_onboard) < truck.max_items and len(unsorted_packages) != 0:
+            package_to_load = shortest_distance(current_location, unsorted_packages)
+            # print(package_to_load)
+            truck.packages_onboard.append(package_to_load)
+            loaded_packages.append(package_to_load)
+            truck.num_items_on_truck = len(truck.packages_onboard)
+            package_to_load.package_status = f'LOADING ON TRUCK {truck.truck_id}'
+            package_to_load.on_truck = f'Truck {truck_1.truck_id}'
+            package_to_load.time_left_hub = truck.time_of_departure
+            current_location = package_to_load.destination_address
+            unsorted_packages.remove(package_to_load)
+
+    # check print(f'\n Unsorted packages: {len(unsorted_packages)}')
+    # print(f'\n Truck 1 packages: {len(truck_1.packages_onboard)}')
+    # for package in truck_1.packages_onboard:
+    #     print(package.package_id)
+    # print()
+    #
+    # print(f'\n Truck 2 packages: {len(truck_2.packages_onboard)}')
+    # for package in truck_2.packages_onboard:
+    #     print(package.package_id)
+    # print()
+    #
+    # print(f'\n Truck 3 packages: {len(truck_3.packages_onboard)}')
+    # for package in truck_3.packages_onboard:
+    #     print(package.package_id)
     # print()
 
 
 # deliver packages in specified truck, updates location, time, mileage, package status, truck status
-# Big O = O(N^3)
+# Big O = O(N)
 def deliver_packages(truck):
     current_loc = addressData[0]  # HUB
-    this_stop = addressData[0]
     truck.current_time = truck.time_of_departure
+    truck.truck_status = 'ON ROUTE'
+
+    # update package and truck time of departure, package status
     for package_item in truck.packages_onboard:
         package_item.time_left_hub = truck.time_of_departure
         package_item.package_status = f'EN ROUTE on Truck_{truck.truck_id}'
-    truck.truck_status = 'ON ROUTE'
-    while len(truck.packages_onboard) > 0:
-        shortest = shortest_distance(current_loc, truck.packages_onboard)
-        for package_item in truck.packages_onboard:
-            if distance_between(current_loc, package_item.destination_address) == shortest:
-                truck.current_time += datetime.timedelta(hours=(shortest / truck.truck_avg_speed))  # why error?
-                truck.daily_miles_traveled += shortest
-                package_item.time_delivered = truck.current_time
-                package_item.package_status = f'DELIVERED at {package_item.time_delivered} by Truck {truck.truck_id}'
-                this_stop = package_item.destination_address
-                truck.packages_delivered.append(package_item)
-                truck.packages_onboard.remove(package_item)
-                truck.num_items_on_truck -= 1
-                # print(f'Package ID: {package_item.package_id} To: {this_stop} Miles: {shortest} '
-                #       f'Time Delivered {package_item.time_delivered} '
-                #       f'Packages remaining: {truck.num_items_on_truck}')
-            current_loc = this_stop
 
-            # for packages not specified early delivery but at same address for improved efficiency
-            for remaining_package in truck.packages_onboard:
-                if remaining_package.destination_address == current_loc:
-                    remaining_package.time_delivered = truck.current_time
-                    remaining_package.package_status = f'DELIVERED at {remaining_package.time_delivered} by ' \
-                                                       f'Truck {truck.truck_id}'
-                    truck.packages_delivered.append(remaining_package)
-                    truck.packages_onboard.remove(remaining_package)
-                    truck.num_items_on_truck -= 1
-                    # print(f'Package ID: {remaining_package.package_id} To: SAME ADDRESS Miles: 0 '
-                    #       f'Time Delivered {remaining_package.time_delivered} '
-                    #       f'Packages remaining: {truck.num_items_on_truck}')
+    # deliver the packages, update status and time, update onboard and delivered list
+    while len(truck.packages_onboard) > 0:
+        next_package = shortest_distance(current_loc, truck.packages_onboard)
+        truck.daily_miles_traveled += distance_between(current_loc, next_package.destination_address)
+        truck.current_time += datetime.timedelta(
+            hours=(distance_between(current_loc, next_package.destination_address) / truck.truck_avg_speed))
+        next_package.time_delivered = truck.current_time
+        next_package.package_status = f'DELIVERED at {next_package.time_delivered} by Truck {truck.truck_id}'
+        current_loc = next_package.destination_address
+        truck.packages_delivered.append(next_package)
+        truck.packages_onboard.remove(next_package)
+        truck.num_items_on_truck -= 1
 
     # return truck to HUB
     if len(truck.packages_onboard) == 0:
@@ -309,7 +262,7 @@ def deliver_packages(truck):
         truck.truck_status = 'RETURNED TO HUB'
         # if truck_1, update truck_3 time of departure = truck_1 time of return to hub
         if truck.truck_id == 1:
-            truck_3.time_of_departure = truck.time_of_return
+            truck_3.time_of_departure = truck_1.time_of_return
 
     # # check data w timestamp/mileage
     # print()
@@ -387,7 +340,7 @@ def wgups_package_tracker():
         print()
         user_input = input('Please choose option 1, 2, 3, or 4: ')
 
-    # Main Menu option #1
+        # Main Menu option #1
         if user_input == '1':  # Print all packages and status w time delivered if appropriate
             print()
             user_time = get_user_time()
@@ -395,15 +348,15 @@ def wgups_package_tracker():
             if user_time != 'Q':
 
                 # simulate correction of wrong address on package 9
-                if user_time >= datetime.timedelta(hours=10, minutes=20):
-                    package_9 = myHash.search(9)
-                    package_9.destination_address = '410 S State St'
-                    package_9.zip = '84111'
-
-                else:
+                if user_time < datetime.timedelta(hours=10, minutes=20):
                     package_9 = myHash.search(9)
                     package_9.destination_address = '300 State St'
                     package_9.zip = '84103'
+
+                else:
+                    package_9 = myHash.search(9)
+                    package_9.destination_address = '410 S State St'
+                    package_9.zip = '84111'
 
                 print(f'Print all packages and status as of {user_time}')
                 print()
@@ -442,7 +395,7 @@ def wgups_package_tracker():
             else:
                 run_program = False
 
-    # Main Menu option #2
+        # Main Menu option #2
         elif user_input == '2':
             print()
             # user_package = None
@@ -465,7 +418,7 @@ def wgups_package_tracker():
                 print('Enter 1 to search by ID or 2 to search by delivery address...')
                 submenu_option = input('Or enter any other key to return to Main Menu - ')
 
-                if submenu_option == '1':   # search by key
+                if submenu_option == '1':  # search by key
                     user_choice = input('Please enter package ID - ')
                     user_package = myHash.search(int(user_choice))
 
@@ -500,13 +453,13 @@ def wgups_package_tracker():
                                   f'\n    Deliver by: {user_package.deliver_by}, Status: '
                                   f'EN ROUTE via {user_package.on_truck}')
                             print()
-                            
+
                         elif user_package.time_delivered < user_time > start_time:
                             print(f'ID #{user_package.package_id} Destination: {user_package.destination_address}, '
                                   f'{user_package.city}, {user_package.state}  {user_package.zip}, Weight: '
                                   f'{user_package.mass}, \n    Special Instructions: * {user_package.special_inst}, '
                                   f'\n    Deliver by: {user_package.deliver_by}, Status: DELIVERED at '
-                                  f'{user_package.time_delivered} by Truck {user_package.on_truck}')
+                                  f'{user_package.time_delivered} by {user_package.on_truck}')
                         print()
                         print()
                         print()
@@ -544,7 +497,7 @@ def wgups_package_tracker():
                                       f'{package.mass}, \n    Special Instructions: * {package.special_inst}, '
                                       f'\n    Deliver by: {package.deliver_by}, Status: IN SORT')
                                 print()
-                                
+
                             elif package.time_delivered > user_time > start_time:
                                 print(f'ID #{package.package_id} Destination: {package.destination_address}, '
                                       f'{package.city}, {package.state}  {package.zip}, Weight: '
@@ -578,7 +531,7 @@ def wgups_package_tracker():
             else:
                 run_program = False
 
-    # Main Menu option #3
+        # Main Menu option #3
         elif user_input == '3':  # End of Day Report - Print All Package Status and Total Mileage
             print()
             for i in range(len(myHash.table)):
@@ -631,7 +584,7 @@ def wgups_package_tracker():
                   f'{truck_1.daily_miles_traveled + truck_2.daily_miles_traveled + truck_3.daily_miles_traveled}')
             print('\n' * 5)
 
-    # Main Menu option #4
+        # Main Menu option #4
         elif user_input == '4':
             print()
             print('Thank you for choosing WGUPS!')
@@ -639,7 +592,7 @@ def wgups_package_tracker():
             print('Program terminated')
             return
 
-    # Invalid option by user
+        # Invalid option by user
         else:
             print()
             # print('\n' * 23)
@@ -664,15 +617,24 @@ myHash = ChainingHashTable(number_of_packages)
 distanceData = []
 addressData = []
 
+# create list of all trucks        ************************
+truck_data = []
+
 # create 3 truck objects and set time of departure
 truck_1 = Truck(1)  # returns to HUB after early deliveries, completes truck 3 route
 truck_1.time_of_departure = datetime.timedelta(hours=8)
+truck_1.max_items = 8  # send truck_1 to hub so driver can complete truck 3 route
 
 truck_2 = Truck(2)
 truck_2.time_of_departure = datetime.timedelta(hours=8)
 
 truck_3 = Truck(3)  # departs hub later to accommodate late arrivals
 truck_3.time_of_departure = truck_1.time_of_return
+
+# add trucks to truck_data list         **************************
+truck_data.append(truck_1)
+truck_data.append(truck_2)
+truck_data.append(truck_3)
 
 # Load package data from CSV
 input_package_data('WGUPS_Package_File.csv')
@@ -683,12 +645,13 @@ input_distance_data('WGUPS_Distance_Table.csv')
 # Load address data from CSV
 input_address_data('WGUPS_Distance_Table.csv')
 
-# load trucks
-load_trucks()
+# autoload the trucks
+auto_load_trucks()
 
 # deliver packages
 deliver_packages(truck_1)
 deliver_packages(truck_2)
 deliver_packages(truck_3)
 
+# start UI
 wgups_package_tracker()

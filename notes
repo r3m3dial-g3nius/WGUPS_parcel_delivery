@@ -53,4 +53,120 @@ Truck 2 - Total miles: 34.8
 Truck 3 - Total miles: 51.2
 Total miles traveled: 112.7
 
-Process finished with exit code 0
+Process finished with exit code
+
+-------------------------------------------------------------------------------------------------------------
+code to load trucks manually
+# load trucks, set time of departure, updates package status
+# Big O = O(N)
+def load_trucks():  # manually + status update + timestamp for departure
+    # load 1st truck   *** take small load of early packages w early return to hub to run truck3?
+    truck_1.packages_onboard.append(myHash.search(39))
+    truck_1.num_items_on_truck += 1
+    truck_1.packages_onboard.append(myHash.search(13))  # Deliver by 10:30
+    truck_1.num_items_on_truck += 1
+    truck_1.packages_onboard.append(myHash.search(19))  # Deliver w 14, 16
+    truck_1.num_items_on_truck += 1
+    truck_1.packages_onboard.append(myHash.search(15))  # Deliver by 9:00
+    truck_1.num_items_on_truck += 1
+    truck_1.packages_onboard.append(myHash.search(14))  # Deliver by 10:30 w 15, 19
+    truck_1.num_items_on_truck += 1
+    truck_1.packages_onboard.append(myHash.search(34))  # Deliver by 10:30
+    truck_1.num_items_on_truck += 1
+    truck_1.packages_onboard.append(myHash.search(16))  # Deliver by 10:30 w 13, 15
+    truck_1.num_items_on_truck += 1
+    truck_1.packages_onboard.append(myHash.search(20))  # Deliver by 10:30 w 13, 15
+    truck_1.num_items_on_truck += 1
+    truck_1.packages_onboard.append(myHash.search(21))
+    truck_1.num_items_on_truck += 1
+
+    for package_item in truck_1.packages_onboard:
+        package_item.package_status = 'ON TRUCK 1'
+        package_item.on_truck = f'Truck {truck_1.truck_id}'
+        package_item.time_left_hub = truck_1.time_of_departure
+
+    # print(f'Number of items on truck_1: {truck_1.num_items_on_truck}')
+
+    # load 2nd truck
+    truck_2.packages_onboard.append(myHash.search(2))
+    truck_2.num_items_on_truck += 1
+    truck_2.packages_onboard.append(myHash.search(33))
+    truck_2.num_items_on_truck += 1
+    truck_2.packages_onboard.append(myHash.search(29))  # Deliver by 10:30
+    truck_2.num_items_on_truck += 1
+    truck_2.packages_onboard.append(myHash.search(7))
+    truck_2.num_items_on_truck += 1
+    truck_2.packages_onboard.append(myHash.search(27))
+    truck_2.num_items_on_truck += 1
+    truck_2.packages_onboard.append(myHash.search(35))
+    truck_2.num_items_on_truck += 1
+    truck_2.packages_onboard.append(myHash.search(36))  # must be on truck_2
+    truck_2.num_items_on_truck += 1
+    truck_2.packages_onboard.append(myHash.search(3))
+    truck_2.num_items_on_truck += 1
+    truck_2.packages_onboard.append(myHash.search(18))  # must be on truck_2
+    truck_2.num_items_on_truck += 1
+    truck_2.packages_onboard.append(myHash.search(40))  # Deliver by 10:30
+    truck_2.num_items_on_truck += 1
+    truck_2.packages_onboard.append(myHash.search(4))
+    truck_2.num_items_on_truck += 1
+    truck_2.packages_onboard.append(myHash.search(37))  # Deliver by 10:30
+    truck_2.num_items_on_truck += 1
+    truck_2.packages_onboard.append(myHash.search(38))  # must be on truck_2
+    truck_2.num_items_on_truck += 1
+    truck_2.packages_onboard.append(myHash.search(5))
+    truck_2.num_items_on_truck += 1
+    truck_2.packages_onboard.append(myHash.search(30))  # Deliver by 10:30
+    truck_2.num_items_on_truck += 1
+    truck_2.packages_onboard.append(myHash.search(8))
+    truck_2.num_items_on_truck += 1
+
+    for package_item in truck_2.packages_onboard:
+        package_item.package_status = 'ON TRUCK 2'
+        package_item.on_truck = f'Truck {truck_2.truck_id}'
+        package_item.time_left_hub = truck_2.time_of_departure
+    # print(f'Number of items on truck_2: {truck_2.num_items_on_truck}')
+
+    # load 3rd truck    late arrivals
+    truck_3.packages_onboard.append(myHash.search(10))
+    truck_3.num_items_on_truck += 1
+    truck_3.packages_onboard.append(myHash.search(17))
+    truck_3.num_items_on_truck += 1
+    truck_3.packages_onboard.append(myHash.search(1))  # Deliver by 10:30
+    truck_3.num_items_on_truck += 1
+    truck_3.packages_onboard.append(myHash.search(31))  # Deliver by 10:30
+    truck_3.num_items_on_truck += 1
+    truck_3.packages_onboard.append(myHash.search(23))
+    truck_3.num_items_on_truck += 1
+    truck_3.packages_onboard.append(myHash.search(22))
+    truck_3.num_items_on_truck += 1
+    truck_3.packages_onboard.append(myHash.search(24))
+    truck_3.num_items_on_truck += 1
+    truck_3.packages_onboard.append(myHash.search(12))
+    truck_3.num_items_on_truck += 1
+    truck_3.packages_onboard.append(myHash.search(11))
+    truck_3.num_items_on_truck += 1
+    truck_3.packages_onboard.append(myHash.search(26))
+    truck_3.num_items_on_truck += 1
+    truck_3.packages_onboard.append(myHash.search(28))  # arrives at HUB 9:05
+    truck_3.num_items_on_truck += 1
+    truck_3.packages_onboard.append(myHash.search(32))  # arrives at HUB 9:05
+    truck_3.num_items_on_truck += 1
+    truck_3.packages_onboard.append(myHash.search(25))  # ** Deliver by 10:30  +++  arrives at HUB 9:05
+    truck_3.num_items_on_truck += 1
+    truck_3.packages_onboard.append(myHash.search(6))  # Deliver by 10:30
+    truck_3.num_items_on_truck += 1
+    truck_3.packages_onboard.append(myHash.search(9))  # wrong address, will be corrected at 10:20
+    truck_3.num_items_on_truck += 1
+
+    for package_item in truck_3.packages_onboard:
+        package_item.on_truck = f'Truck {truck_3.truck_id}'
+        package_item.package_status = 'ON TRUCK 3'
+        package_item.time_left_hub = truck_1.time_of_departure
+    # print(f'Number of items on truck_3: {truck_3.num_items_on_truck}')
+    #
+    # print(
+    #     f'Total number of items on trucks: '
+    #     f'{truck_1.num_items_on_truck + truck_2.num_items_on_truck + truck_3.num_items_on_truck}')
+    # print()
+

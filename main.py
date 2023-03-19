@@ -123,7 +123,7 @@ def distance_between(address1, address2):
     return float(distance)
 
 
-# Nearest Neighbor algorithm! This function to return distance from current location to next closest delivery address
+# Nearest Neighbor algorithm! This function returns closest address from current location prioritizing early deliveries
 # Big O = O(N)
 def shortest_distance(from_address, onboard_packages):
     shortest_early = 9999
@@ -150,7 +150,7 @@ def shortest_distance(from_address, onboard_packages):
 
 
 # auto load trucks, update status, time of departure
-# Big O = O(N)
+# Big O = O(N^2)
 def auto_load_trucks():
     unsorted_packages = []
     loaded_packages = []
@@ -204,7 +204,7 @@ def auto_load_trucks():
             truck.packages_onboard.append(package_to_load)
             loaded_packages.append(package_to_load)
             truck.num_items_on_truck = len(truck.packages_onboard)
-            package_to_load.package_status = f'LOADING ON TRUCK {truck.truck_id}'
+            package_to_load.package_status = f'AT HUB LOADING ON TRUCK {truck.truck_id}'
             package_to_load.on_truck = f'Truck {truck_1.truck_id}'
             package_to_load.time_left_hub = truck.time_of_departure
             current_location = package_to_load.destination_address
@@ -319,10 +319,6 @@ def wgups_package_tracker():
                     if (0 <= h < 24) and (0 <= m < 60):
                         # print(h, m) # check values
                         new_time = datetime.timedelta(hours=h, minutes=m)
-                        # if new_time < datetime.timedelta(hours=10, minutes=20):
-                        #     old_package_9 = Package(9, '300 State St', 'Salt Lake City', 'UT', '84103', 'EOD', 2,
-                        #                             'wrong address', 'AT HUB')
-                        #     myHash.insert(9, old_package_9)
                         return new_time
                     else:
                         print('Please try again:')
@@ -367,13 +363,13 @@ def wgups_package_tracker():
                         print(f'ID #{package_to_check.package_id} Destination: {package_to_check.destination_address}, '
                               f'{package_to_check.city}, {package_to_check.state}  {package_to_check.zip}, Weight: '
                               f'{package_to_check.mass}, \n    Special Instructions: * {package_to_check.special_inst},'
-                              f' \n    Deliver by: {package_to_check.deliver_by}, Status: PROCESSING')
+                              f' \n    Deliver by: {package_to_check.deliver_by}, Status: AT HUB - PROCESSING')
                         print()
                     elif package_to_check.time_left_hub > user_time >= start_time:
                         print(f'ID #{package_to_check.package_id} Destination: {package_to_check.destination_address}, '
                               f'{package_to_check.city}, {package_to_check.state}  {package_to_check.zip}, Weight: '
                               f'{package_to_check.mass}, \n    Special Instructions: * {package_to_check.special_inst},'
-                              f' \n    Deliver by: {package_to_check.deliver_by}, Status: IN SORT')
+                              f' \n    Deliver by: {package_to_check.deliver_by}, Status: AT HUB - SORTING')
                         print()
                     elif package_to_check.time_delivered > user_time >= start_time:
                         print(f'ID #{package_to_check.package_id} Destination: {package_to_check.destination_address},'
@@ -436,14 +432,14 @@ def wgups_package_tracker():
                             print(f'ID #{user_package.package_id} Destination: {user_package.destination_address}, '
                                   f'{user_package.city}, {user_package.state}  {user_package.zip}, Weight: '
                                   f'{user_package.mass}, \n    Special Instructions: * {user_package.special_inst}, '
-                                  f'\n    Deliver by: {user_package.deliver_by}, Status: PROCESSING')
+                                  f'\n    Deliver by: {user_package.deliver_by}, Status: AT HUB - PROCESSING')
                             print()
 
                         elif user_package.time_left_hub > user_time >= start_time:
                             print(f'ID #{user_package.package_id} Destination: {user_package.destination_address}, '
                                   f'{user_package.city}, {user_package.state}  {user_package.zip}, Weight: '
                                   f'{user_package.mass}, \n    Special Instructions: * {user_package.special_inst}, '
-                                  f'\n    Deliver by: {user_package.deliver_by}, Status: IN SORT')
+                                  f'\n    Deliver by: {user_package.deliver_by}, Status: AT HUB - SORTING')
                             print()
 
                         elif user_package.time_delivered > user_time > start_time:
@@ -488,14 +484,14 @@ def wgups_package_tracker():
                                 print(f'ID #{package.package_id} Destination: {package.destination_address}, '
                                       f'{package.city}, {package.state}  {package.zip}, Weight: '
                                       f'{package.mass}, \n    Special Instructions: * {package.special_inst}, '
-                                      f'\n    Deliver by: {package.deliver_by}, Status: PROCESSING')
+                                      f'\n    Deliver by: {package.deliver_by}, Status: AT HUB - PROCESSING')
                                 print()
 
                             elif package.time_left_hub > user_time >= start_time:
                                 print(f'ID #{package.package_id} Destination: {package.destination_address}, '
                                       f'{package.city}, {package.state}  {package.zip}, Weight: '
                                       f'{package.mass}, \n    Special Instructions: * {package.special_inst}, '
-                                      f'\n    Deliver by: {package.deliver_by}, Status: IN SORT')
+                                      f'\n    Deliver by: {package.deliver_by}, Status: AT HUB - SORTING')
                                 print()
 
                             elif package.time_delivered > user_time > start_time:

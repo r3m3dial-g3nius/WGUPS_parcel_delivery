@@ -1,12 +1,9 @@
-import csv
-import math
 import datetime
 
 
 class Package:
     # package constructor
     # Big O = O(1)
-
     def __init__(self, package_id, destination_address, city, state, zip_code, deliver_by, mass, instructions,
                  package_status=''):
         self.package_id = int(package_id)

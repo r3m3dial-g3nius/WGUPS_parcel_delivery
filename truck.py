@@ -1,5 +1,6 @@
 import datetime
 
+
 # Truck constructor
 # Big O = O(1)
 class Truck:
@@ -10,7 +11,7 @@ class Truck:
         self.packages_onboard = []
         self.packages_delivered = []
         self.daily_miles_traveled = 0
-        self.num_items_on_truck = 0    # item counter for items on board
+        self.num_items_on_truck = 0  # item counter for items on board
         self.time_of_departure = datetime.timedelta(hours=0)
         self.current_time = datetime.timedelta(hours=0)
         self.time_of_return = datetime.timedelta(hours=0)

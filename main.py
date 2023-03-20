@@ -68,17 +68,17 @@ def create_and_insert_new_package():
 # Big O = O(N)
 def input_package_data(file_name):
     with open(file_name) as all_packages:
-        package_data = csv.reader(all_packages, delimiter=',')
-        next(package_data)  # SKIP header or delete this line and header line in CSV later
-        for package_row in package_data:
-            package_id = int(package_row[0])
-            destination_address = package_row[1]
-            city = package_row[2]
-            state = package_row[3]
-            zip_code = int(package_row[4])
-            deliver_by = package_row[5]
-            mass = int(package_row[6])
-            special_inst = package_row[7]
+        package_row = csv.reader(all_packages, delimiter=',')
+        next(package_row)  # SKIP header or delete this line and header line in CSV later
+        for package_attribute in package_row:
+            package_id = int(package_attribute[0])
+            destination_address = package_attribute[1]
+            city = package_attribute[2]
+            state = package_attribute[3]
+            zip_code = int(package_attribute[4])
+            deliver_by = package_attribute[5]
+            mass = int(package_attribute[6])
+            special_inst = package_attribute[7]
             # time_left_hub = datetime.timedelta(hours=0)  # do not update
             # time_delivered = datetime.timedelta(hours=0)
             package_status = 'AT HUB'
